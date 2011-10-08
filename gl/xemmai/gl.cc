@@ -377,8 +377,8 @@ void f_use_program(const t_program* a_program)
 
 t_extension::t_extension(t_object* a_module) : ::xemmai::t_extension(a_module)
 {
-	t_type_of<t_array_of<short> >::f_define(this, L"Int16Array");
-	t_type_of<t_array_of<int> >::f_define(this, L"Int32Array");
+	t_type_of<t_array_of<int16_t> >::f_define(this, L"Int16Array");
+	t_type_of<t_array_of<int32_t> >::f_define(this, L"Int32Array");
 	t_type_of<t_array_of<float> >::f_define(this, L"Float32Array");
 	t_type_of<t_error>::f_define(this);
 	t_type_of<t_buffer>::f_define(this);
