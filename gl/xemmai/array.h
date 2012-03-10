@@ -12,7 +12,7 @@ namespace xemmai
 template<typename T>
 class t_array_of
 {
-	friend struct t_type_of<t_array_of>;
+	friend struct xemmai::t_type_of<t_array_of>;
 
 	t_slot v_bytes;
 	size_t v_size;

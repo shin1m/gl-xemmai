@@ -5,8 +5,12 @@
 #include <xemmai/convert.h>
 #include <xemmai/tuple.h>
 #include <xemmai/bytes.h>
+#ifdef _WIN32
+#include <GL/glew.h>
+#else
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
+#endif
 
 namespace gl
 {
@@ -60,6 +64,9 @@ class t_session
 	static t_mutex v_mutex;
 	static bool v_running;
 	static XEMMAI__PORTABLE__THREAD t_session* v_instance;
+#ifdef _WIN32
+	static bool v_glew;
+#endif
 
 	t_extension* v_extension;
 	std::map<GLuint, t_scoped> v_buffers;
@@ -73,6 +80,13 @@ public:
 	static t_session* f_instance()
 	{
 		if (!v_instance) t_throwable::f_throw(L"must be inside main.");
+#ifdef _WIN32
+		if (!v_glew) {
+			if (glewInit() != GLEW_OK) t_throwable::f_throw(L"glewInit failed.");
+			if (GLEW_VERSION_2_0 == GL_FALSE) t_throwable::f_throw(L"GL 2.0 is required.");
+			v_glew = true;
+		}
+#endif
 		return v_instance;
 	}
 

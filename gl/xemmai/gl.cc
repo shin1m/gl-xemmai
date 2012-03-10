@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "array.h"
 #include "buffer.h"
 #include "framebuffer.h"
@@ -39,6 +41,9 @@ t_transfer f_tuple(const t_transfer& a_0, const t_transfer& a_1, const t_transfe
 t_mutex t_session::v_mutex;
 bool t_session::v_running = false;
 XEMMAI__PORTABLE__THREAD t_session* t_session::v_instance;
+#ifdef _WIN32
+bool t_session::v_glew = false;
+#endif
 
 t_session::t_session(t_extension* a_extension) : v_extension(a_extension)
 {
@@ -64,131 +69,261 @@ t_session::~t_session()
 namespace
 {
 
-void f_main(t_extension* a_extension, const t_value& a_callable)
+inline void f_main(t_extension* a_extension, const t_value& a_callable)
 {
 	t_session session(a_extension);
 	a_callable();
 }
 
-void f_bind_buffer(GLenum a_target, const t_buffer* a_buffer)
+inline void f_active_texture(GLenum a_texture)
+{
+	glActiveTexture(a_texture);
+}
+
+inline void f_bind_buffer(GLenum a_target, const t_buffer* a_buffer)
 {
 	glBindBuffer(a_target, a_buffer ? a_buffer->f_id() : 0);
 }
 
-void f_bind_framebuffer(GLenum a_target, const t_framebuffer* a_framebuffer)
+inline void f_bind_framebuffer(GLenum a_target, const t_framebuffer* a_framebuffer)
 {
 	glBindFramebuffer(a_target, a_framebuffer ? a_framebuffer->f_id() : 0);
 }
 
-void f_bind_renderbuffer(GLenum a_target, const t_renderbuffer* a_renderbuffer)
+inline void f_bind_renderbuffer(GLenum a_target, const t_renderbuffer* a_renderbuffer)
 {
 	glBindRenderbuffer(a_target, a_renderbuffer ? a_renderbuffer->f_id() : 0);
 }
 
-void f_bind_texture(GLenum a_target, const t_texture* a_texture)
+inline void f_bind_texture(GLenum a_target, const t_texture* a_texture)
 {
 	glBindTexture(a_target, a_texture ? a_texture->f_id() : 0);
 }
 
-void f_buffer_data(GLenum a_target, const t_bytes& a_data, GLenum a_usage)
+inline void f_blend_color(GLclampf a_red, GLclampf a_green, GLclampf a_blue, GLclampf a_alpha)
+{
+	glBlendColor(a_red, a_green, a_blue, a_alpha);
+}
+
+inline void f_blend_equation(GLenum a_mode)
+{
+	glBlendEquation(a_mode);
+}
+
+inline void f_blend_equation_separate(GLenum a_mode_rgb, GLenum a_mode_alpha)
+{
+	glBlendEquationSeparate(a_mode_rgb, a_mode_alpha);
+}
+
+inline void f_blend_func(GLenum a_sfactor, GLenum a_dfactor)
+{
+	glBlendFunc(a_sfactor, a_dfactor);
+}
+
+inline void f_blend_func_separate(GLenum a_sfactor_rgb, GLenum a_dfactor_rgb, GLenum a_sfactor_alpha, GLenum a_dfactor_alpha)
+{
+	glBlendFuncSeparate(a_sfactor_rgb, a_dfactor_rgb, a_sfactor_alpha, a_dfactor_alpha);
+}
+
+inline void f_buffer_data(GLenum a_target, const t_bytes& a_data, GLenum a_usage)
 {
 	glBufferData(a_target, a_data.f_size(), &a_data[0], a_usage);
 }
 
-void f_buffer_sub_data(GLenum a_target, GLintptr a_offset, const t_bytes& a_data)
+inline void f_buffer_sub_data(GLenum a_target, GLintptr a_offset, const t_bytes& a_data)
 {
 	glBufferSubData(a_target, a_offset, a_data.f_size(), &a_data[0]);
 }
 
-void f_color_mask(bool a_red, bool a_green, bool a_blue, bool a_alpha)
+inline GLenum f_check_framebuffer_status(GLenum a_target)
+{
+	return glCheckFramebufferStatus(a_target);
+}
+
+inline void f_clear(GLbitfield a_mask)
+{
+	glClear(a_mask);
+}
+
+inline void f_clear_color(GLclampf a_red, GLclampf a_green, GLclampf a_blue, GLclampf a_alpha)
+{
+	glClearColor(a_red, a_green, a_blue, a_alpha);
+}
+
+inline void f_clear_depthf(GLclampf a_depth)
+{
+	glClearDepthf(a_depth);
+}
+
+inline void f_clear_stencil(GLint a_s)
+{
+	glClearStencil(a_s);
+}
+
+inline void f_color_mask(bool a_red, bool a_green, bool a_blue, bool a_alpha)
 {
 	glColorMask(a_red ? GL_TRUE : GL_FALSE, a_green ? GL_TRUE : GL_FALSE, a_blue ? GL_TRUE : GL_FALSE, a_alpha ? GL_TRUE : GL_FALSE);
 }
 
-void f_depth_mask(bool a_flag)
+inline void f_copy_tex_image2d(GLenum a_target, GLint a_level, GLenum a_internal_format, GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height, GLint a_border)
+{
+	glCopyTexImage2D(a_target, a_level, a_internal_format, a_x, a_y, a_width, a_height, a_border);
+}
+
+inline void f_copy_tex_sub_image2d(GLenum a_target, GLint a_level, GLint a_xoffset, GLint a_yoffset, GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height)
+{
+	glCopyTexSubImage2D(a_target, a_level, a_xoffset, a_yoffset, a_x, a_y, a_width, a_height);
+}
+
+inline void f_cull_face(GLenum a_mode)
+{
+	glCullFace(a_mode);
+}
+
+inline void f_depth_func(GLenum a_func)
+{
+	glDepthFunc(a_func);
+}
+
+inline void f_depth_mask(bool a_flag)
 {
 	glDepthMask(a_flag ? GL_TRUE : GL_FALSE);
 }
 
-void f_draw_elements(GLenum a_mode, GLsizei a_count, GLenum a_type, GLintptr a_offset)
+inline void f_depth_rangef(GLclampf a_n, GLclampf a_f)
+{
+	glDepthRangef(a_n, a_f);
+}
+
+inline void f_disable(GLenum a_cap)
+{
+	glDisable(a_cap);
+}
+
+inline void f_disable_vertex_attrib_array(GLuint a_index)
+{
+	glDisableVertexAttribArray(a_index);
+}
+
+inline void f_draw_arrays(GLenum a_mode, GLint a_first, GLsizei a_count)
+{
+	glDrawArrays(a_mode, a_first, a_count);
+}
+
+inline void f_draw_elements(GLenum a_mode, GLsizei a_count, GLenum a_type, GLintptr a_offset)
 {
 	glDrawElements(a_mode, a_count, a_type, reinterpret_cast<const GLvoid*>(a_offset));
 }
 
-void f_framebuffer_renderbuffer(GLenum a_target, GLenum a_attachment, GLenum a_renderbuffertarget, const t_renderbuffer* a_renderbuffer)
+inline void f_enable(GLenum a_cap)
+{
+	glEnable(a_cap);
+}
+
+inline void f_enable_vertex_attrib_array(GLuint a_index)
+{
+	glEnableVertexAttribArray(a_index);
+}
+
+inline void f_finish()
+{
+	glFinish();
+}
+
+inline void f_flush()
+{
+	glFlush();
+}
+
+inline void f_framebuffer_renderbuffer(GLenum a_target, GLenum a_attachment, GLenum a_renderbuffertarget, const t_renderbuffer* a_renderbuffer)
 {
 	glFramebufferRenderbuffer(a_target, a_attachment, a_renderbuffertarget, a_renderbuffer ? a_renderbuffer->f_id() : 0);
 }
 
-void f_framebuffer_texture2d(GLenum a_target, GLenum a_attachment, GLenum a_textarget, const t_texture* a_texture, GLint a_level)
+inline void f_framebuffer_texture2d(GLenum a_target, GLenum a_attachment, GLenum a_textarget, const t_texture* a_texture, GLint a_level)
 {
 	glFramebufferTexture2D(a_target, a_attachment, a_textarget, a_texture ? a_texture->f_id() : 0, a_level);
 }
 
-bool f_get_boolean(GLenum a_name)
+inline void f_front_face(GLenum a_mode)
+{
+	glFrontFace(a_mode);
+}
+
+inline void f_generate_mipmap(GLenum a_target)
+{
+	glGenerateMipmap(a_target);
+}
+
+inline bool f_get_boolean(GLenum a_name)
 {
 	GLboolean values[4];
 	glGetBooleanv(a_name, values);
 	return values[0] != GL_FALSE;
 }
 
-t_transfer f_get_booleans(GLenum a_name)
+inline t_transfer f_get_booleans(GLenum a_name)
 {
 	GLboolean values[4];
 	glGetBooleanv(a_name, values);
 	return f_tuple(t_transfer(values[0] != GL_FALSE), t_transfer(values[1] != GL_FALSE), t_transfer(values[2] != GL_FALSE), t_transfer(values[3] != GL_FALSE));
 }
 
-GLint f_get_buffer_parameter(GLenum a_target, GLenum a_name)
+inline GLint f_get_buffer_parameter(GLenum a_target, GLenum a_name)
 {
 	GLint value;
 	glGetBufferParameteriv(a_target, a_name, &value);
 	return value;
 }
 
-GLfloat f_get_float(GLenum a_name)
+inline GLfloat f_get_float(GLenum a_name)
 {
 	GLfloat values[4];
 	glGetFloatv(a_name, values);
 	return values[0];
 }
 
-t_transfer f_get_floats(GLenum a_name)
+inline t_transfer f_get_floats(GLenum a_name)
 {
 	GLfloat values[4];
 	glGetFloatv(a_name, values);
 	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
 }
 
-GLint f_get_framebuffer_attachment_parameter(GLenum a_target, GLenum a_attachment, GLenum a_name)
+inline GLenum f_get_error()
+{
+	return glGetError();
+}
+
+inline GLint f_get_framebuffer_attachment_parameter(GLenum a_target, GLenum a_attachment, GLenum a_name)
 {
 	GLint value;
 	glGetFramebufferAttachmentParameteriv(a_target, a_attachment, a_name, &value);
 	return value;
 }
 
-GLint f_get_integer(GLenum a_name)
+inline GLint f_get_integer(GLenum a_name)
 {
 	GLint values[4];
 	glGetIntegerv(a_name, values);
 	return values[0];
 }
 
-t_transfer f_get_integers(GLenum a_name)
+inline t_transfer f_get_integers(GLenum a_name)
 {
 	GLint values[4];
 	glGetIntegerv(a_name, values);
 	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
 }
 
-GLint f_get_renderbuffer_parameter(GLenum a_target, GLenum a_name)
+inline GLint f_get_renderbuffer_parameter(GLenum a_target, GLenum a_name)
 {
 	GLint value;
 	glGetRenderbufferParameteriv(a_target, a_name, &value);
 	return value;
 }
 
-t_transfer f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
+inline t_transfer f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
 {
 	GLint range[2];
 	GLint precision;
@@ -196,80 +331,100 @@ t_transfer f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
 	return f_tuple(t_transfer(range[0]), t_transfer(range[1]), t_transfer(precision));
 }
 
-std::wstring f_get_string(GLenum a_name)
+inline std::wstring f_get_string(GLenum a_name)
 {
 	return f_convert(reinterpret_cast<const char*>(glGetString(a_name)));
 }
 
-GLfloat f_get_tex_parameterf(GLenum a_target, GLenum a_name)
+inline GLfloat f_get_tex_parameterf(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetTexParameterfv(a_target, a_name, values);
 	return values[0];
 }
 
-t_transfer f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
+inline t_transfer f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetTexParameterfv(a_target, a_name, values);
 	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
 }
 
-GLint f_get_tex_parameteri(GLenum a_target, GLenum a_name)
+inline GLint f_get_tex_parameteri(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetTexParameteriv(a_target, a_name, values);
 	return values[0];
 }
 
-t_transfer f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
+inline t_transfer f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetTexParameteriv(a_target, a_name, values);
 	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
 }
 
-GLfloat f_get_vertex_attribf(GLenum a_target, GLenum a_name)
+inline GLfloat f_get_vertex_attribf(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetVertexAttribfv(a_target, a_name, values);
 	return values[0];
 }
 
-t_transfer f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
+inline t_transfer f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetVertexAttribfv(a_target, a_name, values);
 	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
 }
 
-GLint f_get_vertex_attribi(GLenum a_target, GLenum a_name)
+inline GLint f_get_vertex_attribi(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetVertexAttribiv(a_target, a_name, values);
 	return values[0];
 }
 
-t_transfer f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
+inline t_transfer f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetVertexAttribiv(a_target, a_name, values);
 	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
 }
 
-GLintptr f_get_vertex_attrib_pointer(GLuint a_index, GLenum a_name)
+inline GLintptr f_get_vertex_attrib_pointer(GLuint a_index, GLenum a_name)
 {
 	GLvoid* pointer;
 	glGetVertexAttribPointerv(a_index, a_name, &pointer);
 	return reinterpret_cast<GLintptr>(pointer);
 }
 
-bool f_is_enabled(GLenum a_capability)
+inline void f_hint(GLenum a_target, GLenum a_mode)
+{
+	glHint(a_target, a_mode);
+}
+
+inline bool f_is_enabled(GLenum a_capability)
 {
 	return glIsEnabled(a_capability) != GL_FALSE;
 }
 
-void f_read_pixels(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height, GLenum a_format, GLenum a_type, t_bytes& a_data)
+inline void f_line_width(GLfloat a_width)
+{
+	glLineWidth(a_width);
+}
+
+inline void f_pixel_storei(GLenum a_pname, GLint a_param)
+{
+	glPixelStorei(a_pname, a_param);
+}
+
+inline void f_polygon_offset(GLfloat a_factor, GLfloat a_units)
+{
+	glPolygonOffset(a_factor, a_units);
+}
+
+inline void f_read_pixels(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height, GLenum a_format, GLenum a_type, t_bytes& a_data)
 {
 	size_t n;
 	switch (a_type) {
@@ -336,41 +491,121 @@ void f_read_pixels(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height, GLen
 	glReadPixels(a_x, a_y, a_width, a_height, a_format, a_type, &a_data[0]);
 }
 
-void f_sample_coverage(GLclampf a_value, bool a_invert)
+inline void f_release_shader_compiler()
+{
+	glReleaseShaderCompiler();
+}
+
+inline void f_renderbuffer_storage(GLenum a_target, GLenum a_internalformat, GLsizei a_width, GLsizei a_height)
+{
+	glRenderbufferStorage(a_target, a_internalformat, a_width, a_height);
+}
+
+inline void f_sample_coverage(GLclampf a_value, bool a_invert)
 {
 	glSampleCoverage(a_value, a_invert ? GL_TRUE : GL_FALSE);
 }
 
-void f_tex_image2d(GLenum a_target, GLint a_level, GLint a_internalformat, GLsizei a_width, GLsizei a_height, GLint a_border, GLenum a_format, GLenum a_type, const t_bytes& a_pixels)
+inline void f_scissor(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height)
+{
+	glScissor(a_x, a_y, a_width, a_height);
+}
+
+inline void f_stencil_func(GLenum a_func, GLint a_ref, GLuint a_mask)
+{
+	glStencilFunc(a_func, a_ref, a_mask);
+}
+
+inline void f_stencil_func_separate(GLenum a_frontfunc, GLenum a_backfunc, GLint a_ref, GLuint a_mask)
+{
+	glStencilFuncSeparate(a_frontfunc, a_backfunc, a_ref, a_mask);
+}
+
+inline void f_stencil_mask(GLuint a_mask)
+{
+	glStencilMask(a_mask);
+}
+
+inline void f_stencil_mask_separate(GLenum a_face, GLuint a_mask)
+{
+	glStencilMaskSeparate(a_face, a_mask);
+}
+
+inline void f_stencil_op(GLenum a_fail, GLenum a_zfail, GLenum a_zpass)
+{
+	glStencilOp(a_fail, a_zfail, a_zpass);
+}
+
+inline void f_stencil_op_separate(GLenum a_face, GLenum a_sfail, GLenum a_dpfail, GLenum a_dppass)
+{
+	glStencilOpSeparate(a_face, a_sfail, a_dpfail, a_dppass);
+}
+
+inline void f_tex_image2d(GLenum a_target, GLint a_level, GLint a_internalformat, GLsizei a_width, GLsizei a_height, GLint a_border, GLenum a_format, GLenum a_type, const t_bytes& a_pixels)
 {
 	glTexImage2D(a_target, a_level, a_internalformat, a_width, a_height, a_border, a_format, a_type, &a_pixels[0]);
 }
 
-void f_tex_parameter4f(GLenum a_target, GLenum a_name, GLfloat a_value0, GLfloat a_value1, GLfloat a_value2, GLfloat a_value3)
+inline void f_tex_parameterf(GLenum a_target, GLenum a_pname, GLfloat a_param)
+{
+	glTexParameterf(a_target, a_pname, a_param);
+}
+
+inline void f_tex_parameter4f(GLenum a_target, GLenum a_name, GLfloat a_value0, GLfloat a_value1, GLfloat a_value2, GLfloat a_value3)
 {
 	GLfloat values[] = {a_value0, a_value1, a_value2, a_value3};
 	glTexParameterfv(a_target, a_name, values);
 }
 
-void f_tex_parameter4i(GLenum a_target, GLenum a_name, GLint a_value0, GLint a_value1, GLint a_value2, GLint a_value3)
+inline void f_tex_parameteri(GLenum a_target, GLenum a_pname, GLint a_param)
+{
+	glTexParameteri(a_target, a_pname, a_param);
+}
+
+inline void f_tex_parameter4i(GLenum a_target, GLenum a_name, GLint a_value0, GLint a_value1, GLint a_value2, GLint a_value3)
 {
 	GLint values[] = {a_value0, a_value1, a_value2, a_value3};
 	glTexParameteriv(a_target, a_name, values);
 }
 
-void f_tex_sub_image2d(GLenum a_target, GLint a_level, GLint a_xoffset, GLint a_yoffset, GLsizei a_width, GLsizei a_height, GLenum a_format, GLenum a_type, const t_bytes& a_pixels)
+inline void f_tex_sub_image2d(GLenum a_target, GLint a_level, GLint a_xoffset, GLint a_yoffset, GLsizei a_width, GLsizei a_height, GLenum a_format, GLenum a_type, const t_bytes& a_pixels)
 {
 	glTexSubImage2D(a_target, a_level, a_xoffset, a_yoffset, a_width, a_height, a_format, a_type, &a_pixels[0]);
 }
 
-void f_vertex_attrib_pointer(GLuint a_index, GLint a_size, GLenum a_type, bool a_normalized, GLsizei a_stride, GLintptr a_offset)
+inline void f_vertex_attrib_pointer(GLuint a_index, GLint a_size, GLenum a_type, bool a_normalized, GLsizei a_stride, GLintptr a_offset)
 {
 	glVertexAttribPointer(a_index, a_size, a_type, a_normalized ? GL_TRUE : GL_FALSE, a_stride, reinterpret_cast<const GLvoid*>(a_offset));
 }
 
-void f_use_program(const t_program* a_program)
+inline void f_viewport(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height)
+{
+	glViewport(a_x, a_y, a_width, a_height);
+}
+
+inline void f_use_program(const t_program* a_program)
 {
 	glUseProgram(a_program ? a_program->f_id() : 0);
+}
+
+inline void f_vertex_attrib1f(GLuint a_index, GLfloat a_x)
+{
+	glVertexAttrib1f(a_index, a_x);
+}
+
+inline void f_vertex_attrib2f(GLuint a_index, GLfloat a_x, GLfloat a_y)
+{
+	glVertexAttrib2f(a_index, a_x, a_y);
+}
+
+inline void f_vertex_attrib3f(GLuint a_index, GLfloat a_x, GLfloat a_y, GLfloat a_z)
+{
+	glVertexAttrib3f(a_index, a_x, a_y, a_z);
+}
+
+inline void f_vertex_attrib4f(GLuint a_index, GLfloat a_x, GLfloat a_y, GLfloat a_z, GLfloat a_w)
+{
+	glVertexAttrib4f(a_index, a_x, a_y, a_z, a_w);
 }
 
 }
@@ -389,48 +624,48 @@ t_extension::t_extension(t_object* a_module) : ::xemmai::t_extension(a_module)
 	t_type_of<t_shader>::f_define(this);
 	t_type_of<t_uniform_location>::f_define(this);
 	f_define<void (*)(t_extension*, const t_value&), f_main>(this, L"main");
-	f_define<void (*)(GLenum), glActiveTexture>(this, L"active_texture");
+	f_define<void (*)(GLenum), f_active_texture>(this, L"active_texture");
 	f_define<void (*)(GLenum, const t_buffer*), f_bind_buffer>(this, L"bind_buffer");
 	f_define<void (*)(GLenum, const t_framebuffer*), f_bind_framebuffer>(this, L"bind_framebuffer");
 	f_define<void (*)(GLenum, const t_renderbuffer*), f_bind_renderbuffer>(this, L"bind_renderbuffer");
 	f_define<void (*)(GLenum, const t_texture*), f_bind_texture>(this, L"bind_texture");
-	f_define<void (*)(GLclampf, GLclampf, GLclampf, GLclampf), glBlendColor>(this, L"blend_color");
-	f_define<void (*)(GLenum), glBlendEquation>(this, L"blend_equation");
-	f_define<void (*)(GLenum, GLenum), glBlendEquationSeparate>(this, L"blend_equation_separate");
-	f_define<void (*)(GLenum, GLenum), glBlendFunc>(this, L"blend_func");
-	f_define<void (*)(GLenum, GLenum, GLenum, GLenum), glBlendFuncSeparate>(this, L"blend_func_separate");
+	f_define<void (*)(GLclampf, GLclampf, GLclampf, GLclampf), f_blend_color>(this, L"blend_color");
+	f_define<void (*)(GLenum), f_blend_equation>(this, L"blend_equation");
+	f_define<void (*)(GLenum, GLenum), f_blend_equation_separate>(this, L"blend_equation_separate");
+	f_define<void (*)(GLenum, GLenum), f_blend_func>(this, L"blend_func");
+	f_define<void (*)(GLenum, GLenum, GLenum, GLenum), f_blend_func_separate>(this, L"blend_func_separate");
 	f_define<void (*)(GLenum, const t_bytes&, GLenum), f_buffer_data>(this, L"buffer_data");
 	f_define<void (*)(GLenum, GLintptr, const t_bytes&), f_buffer_sub_data>(this, L"buffer_sub_data");
-	f_define<GLenum (*)(GLenum), glCheckFramebufferStatus>(this, L"check_framebuffer_status");
-	f_define<void (*)(GLbitfield), glClear>(this, L"clear");
-	f_define<void (*)(GLclampf, GLclampf, GLclampf, GLclampf), glClearColor>(this, L"clear_color");
-	f_define<void (*)(GLclampf), glClearDepthf>(this, L"clear_depthf");
-	f_define<void (*)(GLint), glClearStencil>(this, L"clear_stencil");
+	f_define<GLenum (*)(GLenum), f_check_framebuffer_status>(this, L"check_framebuffer_status");
+	f_define<void (*)(GLbitfield), f_clear>(this, L"clear");
+	f_define<void (*)(GLclampf, GLclampf, GLclampf, GLclampf), f_clear_color>(this, L"clear_color");
+	f_define<void (*)(GLclampf), f_clear_depthf>(this, L"clear_depthf");
+	f_define<void (*)(GLint), f_clear_stencil>(this, L"clear_stencil");
 	f_define<void (*)(bool, bool, bool, bool), f_color_mask>(this, L"color_mask");
-	f_define<void (*)(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint), glCopyTexImage2D>(this, L"copy_tex_image2d");
-	f_define<void (*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei), glCopyTexSubImage2D>(this, L"copy_tex_sub_image2d");
-	f_define<void (*)(GLenum), glCullFace>(this, L"cull_face");
-	f_define<void (*)(GLenum), glDepthFunc>(this, L"depth_func");
+	f_define<void (*)(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint), f_copy_tex_image2d>(this, L"copy_tex_image2d");
+	f_define<void (*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei), f_copy_tex_sub_image2d>(this, L"copy_tex_sub_image2d");
+	f_define<void (*)(GLenum), f_cull_face>(this, L"cull_face");
+	f_define<void (*)(GLenum), f_depth_func>(this, L"depth_func");
 	f_define<void (*)(bool), f_depth_mask>(this, L"depth_mask");
-	f_define<void (*)(GLclampf, GLclampf), glDepthRangef>(this, L"depth_rangef");
-	f_define<void (*)(GLenum), glDisable>(this, L"disable");
-	f_define<void (*)(GLuint), glDisableVertexAttribArray>(this, L"disable_vertex_attrib_array");
-	f_define<void (*)(GLenum, GLint, GLsizei), glDrawArrays>(this, L"draw_arrays");
+	f_define<void (*)(GLclampf, GLclampf), f_depth_rangef>(this, L"depth_rangef");
+	f_define<void (*)(GLenum), f_disable>(this, L"disable");
+	f_define<void (*)(GLuint), f_disable_vertex_attrib_array>(this, L"disable_vertex_attrib_array");
+	f_define<void (*)(GLenum, GLint, GLsizei), f_draw_arrays>(this, L"draw_arrays");
 	f_define<void (*)(GLenum, GLsizei, GLenum, GLintptr), f_draw_elements>(this, L"draw_elements");
-	f_define<void (*)(GLenum), glEnable>(this, L"enable");
-	f_define<void (*)(GLuint), glEnableVertexAttribArray>(this, L"enable_vertex_attrib_array");
-	f_define<void (*)(), glFinish>(this, L"finish");
-	f_define<void (*)(), glFlush>(this, L"flush");
+	f_define<void (*)(GLenum), f_enable>(this, L"enable");
+	f_define<void (*)(GLuint), f_enable_vertex_attrib_array>(this, L"enable_vertex_attrib_array");
+	f_define<void (*)(), f_finish>(this, L"finish");
+	f_define<void (*)(), f_flush>(this, L"flush");
 	f_define<void (*)(GLenum, GLenum, GLenum, const t_renderbuffer*), f_framebuffer_renderbuffer>(this, L"framebuffer_renderbuffer");
 	f_define<void (*)(GLenum, GLenum, GLenum, const t_texture*, GLint), f_framebuffer_texture2d>(this, L"framebuffer_texture2d");
-	f_define<void (*)(GLenum), glFrontFace>(this, L"front_face");
-	f_define<void (*)(GLenum), glGenerateMipmap>(this, L"generate_mipmap");
+	f_define<void (*)(GLenum), f_front_face>(this, L"front_face");
+	f_define<void (*)(GLenum), f_generate_mipmap>(this, L"generate_mipmap");
 	f_define<bool (*)(GLenum), f_get_boolean>(this, L"get_boolean");
 	f_define<t_transfer (*)(GLenum), f_get_booleans>(this, L"get_booleans");
 	f_define<GLint (*)(GLenum, GLenum), f_get_buffer_parameter>(this, L"get_buffer_parameter");
 	f_define<GLfloat (*)(GLenum), f_get_float>(this, L"get_float");
 	f_define<t_transfer (*)(GLenum), f_get_floats>(this, L"get_floats");
-	f_define<GLenum (*)(), glGetError>(this, L"get_error");
+	f_define<GLenum (*)(), f_get_error>(this, L"get_error");
 	f_define<GLint (*)(GLenum, GLenum, GLenum), f_get_framebuffer_attachment_parameter>(this, L"get_framebuffer_attachment_parameter");
 	f_define<GLint (*)(GLenum), f_get_integer>(this, L"get_integer");
 	f_define<t_transfer (*)(GLenum), f_get_integers>(this, L"get_integers");
@@ -446,35 +681,35 @@ t_extension::t_extension(t_object* a_module) : ::xemmai::t_extension(a_module)
 	f_define<GLint (*)(GLuint, GLenum), f_get_vertex_attribi>(this, L"get_vertex_attribi");
 	f_define<t_transfer (*)(GLuint, GLenum), f_get_vertex_attribiv>(this, L"get_vertex_attribiv");
 	f_define<GLintptr (*)(GLuint, GLenum), f_get_vertex_attrib_pointer>(this, L"get_vertex_attrib_pointer");
-	f_define<void (*)(GLenum, GLenum), glHint>(this, L"hint");
+	f_define<void (*)(GLenum, GLenum), f_hint>(this, L"hint");
 	f_define<bool (*)(GLenum), f_is_enabled>(this, L"is_enabled");
-	f_define<void (*)(GLfloat), glLineWidth>(this, L"line_width");
-	f_define<void (*)(GLenum, GLint), glPixelStorei>(this, L"pixel_storei");
-	f_define<void (*)(GLfloat, GLfloat), glPolygonOffset>(this, L"polygon_offset");
+	f_define<void (*)(GLfloat), f_line_width>(this, L"line_width");
+	f_define<void (*)(GLenum, GLint), f_pixel_storei>(this, L"pixel_storei");
+	f_define<void (*)(GLfloat, GLfloat), f_polygon_offset>(this, L"polygon_offset");
 	f_define<void (*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, t_bytes&), f_read_pixels>(this, L"read_pixels");
-	f_define<void (*)(), glReleaseShaderCompiler>(this, L"release_shader_compiler");
-	f_define<void (*)(GLenum, GLenum, GLsizei, GLsizei), glRenderbufferStorage>(this, L"renderbuffer_storage");
+	f_define<void (*)(), f_release_shader_compiler>(this, L"release_shader_compiler");
+	f_define<void (*)(GLenum, GLenum, GLsizei, GLsizei), f_renderbuffer_storage>(this, L"renderbuffer_storage");
 	f_define<void (*)(GLclampf, bool), f_sample_coverage>(this, L"sample_coverage");
-	f_define<void (*)(GLint, GLint, GLsizei, GLsizei), glScissor>(this, L"scissor");
-	f_define<void (*)(GLenum, GLint, GLuint), glStencilFunc>(this, L"stencil_func");
-	f_define<void (*)(GLenum, GLenum, GLint, GLuint), glStencilFuncSeparate>(this, L"stencil_func_separate");
-	f_define<void (*)(GLuint), glStencilMask>(this, L"stencil_mask");
-	f_define<void (*)(GLenum, GLuint), glStencilMaskSeparate>(this, L"stencil_mask_separate");
-	f_define<void (*)(GLenum, GLenum, GLenum), glStencilOp>(this, L"stencil_op");
-	f_define<void (*)(GLenum, GLenum, GLenum, GLenum), glStencilOpSeparate>(this, L"stencil_op_separate");
+	f_define<void (*)(GLint, GLint, GLsizei, GLsizei), f_scissor>(this, L"scissor");
+	f_define<void (*)(GLenum, GLint, GLuint), f_stencil_func>(this, L"stencil_func");
+	f_define<void (*)(GLenum, GLenum, GLint, GLuint), f_stencil_func_separate>(this, L"stencil_func_separate");
+	f_define<void (*)(GLuint), f_stencil_mask>(this, L"stencil_mask");
+	f_define<void (*)(GLenum, GLuint), f_stencil_mask_separate>(this, L"stencil_mask_separate");
+	f_define<void (*)(GLenum, GLenum, GLenum), f_stencil_op>(this, L"stencil_op");
+	f_define<void (*)(GLenum, GLenum, GLenum, GLenum), f_stencil_op_separate>(this, L"stencil_op_separate");
 	f_define<void (*)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const t_bytes&), f_tex_image2d>(this, L"tex_image2d");
-	f_define<void (*)(GLenum, GLenum, GLfloat), glTexParameterf>(this, L"tex_parameterf");
+	f_define<void (*)(GLenum, GLenum, GLfloat), f_tex_parameterf>(this, L"tex_parameterf");
 	f_define<void (*)(GLenum, GLenum, GLfloat, GLfloat, GLfloat, GLfloat), f_tex_parameter4f>(this, L"tex_parameter4f");
-	f_define<void (*)(GLenum, GLenum, GLint), glTexParameteri>(this, L"tex_parameteri");
+	f_define<void (*)(GLenum, GLenum, GLint), f_tex_parameteri>(this, L"tex_parameteri");
 	f_define<void (*)(GLenum, GLenum, GLint, GLint, GLint, GLint), f_tex_parameter4i>(this, L"tex_parameter4i");
 	f_define<void (*)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const t_bytes&), f_tex_sub_image2d>(this, L"tex_sub_image2d");
 	f_define<void (*)(const t_program*), f_use_program>(this, L"use_program");
-	f_define<void (*)(GLuint, GLfloat), glVertexAttrib1f>(this, L"vertex_attrib1f");
-	f_define<void (*)(GLuint, GLfloat, GLfloat), glVertexAttrib2f>(this, L"vertex_attrib2f");
-	f_define<void (*)(GLuint, GLfloat, GLfloat, GLfloat), glVertexAttrib3f>(this, L"vertex_attrib3f");
-	f_define<void (*)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat), glVertexAttrib4f>(this, L"vertex_attrib4f");
+	f_define<void (*)(GLuint, GLfloat), f_vertex_attrib1f>(this, L"vertex_attrib1f");
+	f_define<void (*)(GLuint, GLfloat, GLfloat), f_vertex_attrib2f>(this, L"vertex_attrib2f");
+	f_define<void (*)(GLuint, GLfloat, GLfloat, GLfloat), f_vertex_attrib3f>(this, L"vertex_attrib3f");
+	f_define<void (*)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat), f_vertex_attrib4f>(this, L"vertex_attrib4f");
 	f_define<void (*)(GLuint, GLint, GLenum, bool, GLsizei, GLintptr), f_vertex_attrib_pointer>(this, L"vertex_attrib_pointer");
-	f_define<void (*)(GLint, GLint, GLsizei, GLsizei), glViewport>(this, L"viewport");
+	f_define<void (*)(GLint, GLint, GLsizei, GLsizei), f_viewport>(this, L"viewport");
 	a_module->f_put(t_symbol::f_instantiate(L"DEPTH_BUFFER_BIT"), f_as(GL_DEPTH_BUFFER_BIT));
 	a_module->f_put(t_symbol::f_instantiate(L"STENCIL_BUFFER_BIT"), f_as(GL_STENCIL_BUFFER_BIT));
 	a_module->f_put(t_symbol::f_instantiate(L"COLOR_BUFFER_BIT"), f_as(GL_COLOR_BUFFER_BIT));
