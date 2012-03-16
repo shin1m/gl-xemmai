@@ -1,4 +1,6 @@
+#ifdef _WIN32
 #include <cstdint>
+#endif
 
 #include "array.h"
 #include "buffer.h"
