@@ -19,18 +19,18 @@ class t_program
 	}
 	~t_program()
 	{
-		v_entry->second.f_pointer__(0);
+		v_entry->second.f_pointer__(nullptr);
 		t_session* session = t_session::f_instance();
 		session->v_programs.erase(v_entry);
 	}
 
 public:
-	static t_transfer f_construct(t_object* a_class)
+	static t_scoped f_construct(t_object* a_class)
 	{
 		t_session* session = t_session::f_instance();
 		GLuint id = glCreateProgram();
 		t_error::f_check();
-		t_transfer object = t_object::f_allocate(a_class);
+		t_scoped object = t_object::f_allocate(a_class);
 		object.f_pointer__(new t_program(session->v_programs.insert(std::make_pair(id, static_cast<t_object*>(object))).first));
 		return object;
 	}
@@ -57,25 +57,25 @@ public:
 	{
 		glDetachShader(f_id(), a_shader.f_id());
 	}
-	t_transfer f_get_active_attrib(GLuint a_index) const
+	t_scoped f_get_active_attrib(GLuint a_index) const
 	{
 		GLint n = f_get_parameteri(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
 		GLint size;
 		GLenum type;
 		std::vector<GLchar> name(n);
 		glGetActiveAttrib(f_id(), a_index, n, NULL, &size, &type, &name[0]);
-		return f_tuple(t_transfer(size), t_transfer(type), f_global()->f_as(f_convert(&name[0])));
+		return f_tuple(t_scoped(size), t_scoped(type), f_global()->f_as(f_convert(&name[0])));
 	}
-	t_transfer f_get_active_uniform(GLuint a_index) const
+	t_scoped f_get_active_uniform(GLuint a_index) const
 	{
 		GLint n = f_get_parameteri(GL_ACTIVE_UNIFORM_MAX_LENGTH);
 		GLint size;
 		GLenum type;
 		std::vector<GLchar> name(n);
 		glGetActiveUniform(f_id(), a_index, n, NULL, &size, &type, &name[0]);
-		return f_tuple(t_transfer(size), t_transfer(type), f_global()->f_as(f_convert(&name[0])));
+		return f_tuple(t_scoped(size), t_scoped(type), f_global()->f_as(f_convert(&name[0])));
 	}
-	t_transfer f_get_attached_shaders() const;
+	t_scoped f_get_attached_shaders() const;
 	GLint f_get_attrib_location(const std::wstring& a_name) const
 	{
 		return glGetAttribLocation(f_id(), f_convert(a_name).c_str());
@@ -93,8 +93,8 @@ public:
 		glGetProgramInfoLog(f_id(), n, NULL, &log[0]);
 		return f_convert(&log[0]);
 	}
-	t_transfer f_get_uniformfv(const t_uniform_location& a_location) const;
-	t_transfer f_get_uniformiv(const t_uniform_location& a_location) const;
+	t_scoped f_get_uniformfv(const t_uniform_location& a_location) const;
+	t_scoped f_get_uniformiv(const t_uniform_location& a_location) const;
 	t_uniform_location f_get_uniform_location(const std::wstring& a_name) const
 	{
 		return glGetUniformLocation(f_id(), f_convert(a_name).c_str());
@@ -126,12 +126,10 @@ struct t_type_of<t_program> : t_type
 
 	static void f_define(t_extension* a_extension);
 
-	t_type_of(const t_transfer& a_module, const t_transfer& a_super) : t_type(a_module, a_super)
-	{
-	}
+	using t_type::t_type;
 	virtual t_type* f_derive(t_object* a_this);
 	virtual void f_finalize(t_object* a_this);
-	virtual t_transfer f_construct(t_object* a_class, t_slot* a_stack, size_t a_n);
+	virtual t_scoped f_construct(t_object* a_class, t_slot* a_stack, size_t a_n);
 };
 
 }

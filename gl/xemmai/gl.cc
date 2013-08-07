@@ -17,30 +17,29 @@ namespace xemmai
 
 using ::xemmai::t_symbol;
 using ::xemmai::f_define;
-using ::xemmai::portable::t_scoped_lock;
 
-t_transfer f_tuple(const t_transfer& a_0, const t_transfer& a_1, const t_transfer& a_2)
+t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2)
 {
-	t_transfer p = t_tuple::f_instantiate(3);
+	t_scoped p = t_tuple::f_instantiate(3);
 	t_tuple& tuple = f_as<t_tuple&>(p);
-	tuple[0].f_construct(a_0);
-	tuple[1].f_construct(a_1);
-	tuple[2].f_construct(a_2);
+	tuple[0].f_construct(std::move(a_0));
+	tuple[1].f_construct(std::move(a_1));
+	tuple[2].f_construct(std::move(a_2));
 	return p;
 }
 
-t_transfer f_tuple(const t_transfer& a_0, const t_transfer& a_1, const t_transfer& a_2, const t_transfer& a_3)
+t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2, t_scoped&& a_3)
 {
-	t_transfer p = t_tuple::f_instantiate(4);
+	t_scoped p = t_tuple::f_instantiate(4);
 	t_tuple& tuple = f_as<t_tuple&>(p);
-	tuple[0].f_construct(a_0);
-	tuple[1].f_construct(a_1);
-	tuple[2].f_construct(a_2);
-	tuple[3].f_construct(a_3);
+	tuple[0].f_construct(std::move(a_0));
+	tuple[1].f_construct(std::move(a_1));
+	tuple[2].f_construct(std::move(a_2));
+	tuple[3].f_construct(std::move(a_3));
 	return p;
 }
 
-t_mutex t_session::v_mutex;
+std::mutex t_session::v_mutex;
 bool t_session::v_running = false;
 XEMMAI__PORTABLE__THREAD t_session* t_session::v_instance;
 #ifdef _WIN32
@@ -49,7 +48,7 @@ bool t_session::v_glew = false;
 
 t_session::t_session(t_extension* a_extension) : v_extension(a_extension)
 {
-	t_scoped_lock lock(v_mutex);
+	std::unique_lock<std::mutex> lock(v_mutex);
 	if (v_running) t_throwable::f_throw(L"main already running.");
 	v_running = true;
 	v_instance = this;
@@ -63,9 +62,9 @@ t_session::~t_session()
 	while (!v_textures.empty()) f_as<t_texture&>(v_textures.begin()->second).f_delete();
 	while (!v_programs.empty()) f_as<t_program&>(v_programs.begin()->second).f_delete();
 	while (!v_shaders.empty()) f_as<t_shader&>(v_shaders.begin()->second).f_delete();
-	t_scoped_lock lock(v_mutex);
+	std::unique_lock<std::mutex> lock(v_mutex);
 	v_running = false;
-	v_instance = 0;
+	v_instance = nullptr;
 }
 
 namespace
@@ -264,11 +263,11 @@ inline bool f_get_boolean(GLenum a_name)
 	return values[0] != GL_FALSE;
 }
 
-inline t_transfer f_get_booleans(GLenum a_name)
+inline t_scoped f_get_booleans(GLenum a_name)
 {
 	GLboolean values[4];
 	glGetBooleanv(a_name, values);
-	return f_tuple(t_transfer(values[0] != GL_FALSE), t_transfer(values[1] != GL_FALSE), t_transfer(values[2] != GL_FALSE), t_transfer(values[3] != GL_FALSE));
+	return f_tuple(t_scoped(values[0] != GL_FALSE), t_scoped(values[1] != GL_FALSE), t_scoped(values[2] != GL_FALSE), t_scoped(values[3] != GL_FALSE));
 }
 
 inline GLint f_get_buffer_parameter(GLenum a_target, GLenum a_name)
@@ -285,11 +284,11 @@ inline GLfloat f_get_float(GLenum a_name)
 	return values[0];
 }
 
-inline t_transfer f_get_floats(GLenum a_name)
+inline t_scoped f_get_floats(GLenum a_name)
 {
 	GLfloat values[4];
 	glGetFloatv(a_name, values);
-	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
+	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
 }
 
 inline GLenum f_get_error()
@@ -311,11 +310,11 @@ inline GLint f_get_integer(GLenum a_name)
 	return values[0];
 }
 
-inline t_transfer f_get_integers(GLenum a_name)
+inline t_scoped f_get_integers(GLenum a_name)
 {
 	GLint values[4];
 	glGetIntegerv(a_name, values);
-	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
+	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
 }
 
 inline GLint f_get_renderbuffer_parameter(GLenum a_target, GLenum a_name)
@@ -325,12 +324,12 @@ inline GLint f_get_renderbuffer_parameter(GLenum a_target, GLenum a_name)
 	return value;
 }
 
-inline t_transfer f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
+inline t_scoped f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
 {
 	GLint range[2];
 	GLint precision;
 	glGetShaderPrecisionFormat(a_shader, a_precision, range, &precision);
-	return f_tuple(t_transfer(range[0]), t_transfer(range[1]), t_transfer(precision));
+	return f_tuple(t_scoped(range[0]), t_scoped(range[1]), t_scoped(precision));
 }
 
 inline std::wstring f_get_string(GLenum a_name)
@@ -345,11 +344,11 @@ inline GLfloat f_get_tex_parameterf(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_transfer f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
+inline t_scoped f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetTexParameterfv(a_target, a_name, values);
-	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
+	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
 }
 
 inline GLint f_get_tex_parameteri(GLenum a_target, GLenum a_name)
@@ -359,11 +358,11 @@ inline GLint f_get_tex_parameteri(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_transfer f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
+inline t_scoped f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetTexParameteriv(a_target, a_name, values);
-	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
+	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
 }
 
 inline GLfloat f_get_vertex_attribf(GLenum a_target, GLenum a_name)
@@ -373,11 +372,11 @@ inline GLfloat f_get_vertex_attribf(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_transfer f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
+inline t_scoped f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetVertexAttribfv(a_target, a_name, values);
-	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
+	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
 }
 
 inline GLint f_get_vertex_attribi(GLenum a_target, GLenum a_name)
@@ -387,11 +386,11 @@ inline GLint f_get_vertex_attribi(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_transfer f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
+inline t_scoped f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetVertexAttribiv(a_target, a_name, values);
-	return f_tuple(t_transfer(values[0]), t_transfer(values[1]), t_transfer(values[2]), t_transfer(values[3]));
+	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
 }
 
 inline GLintptr f_get_vertex_attrib_pointer(GLuint a_index, GLenum a_name)
@@ -663,25 +662,25 @@ t_extension::t_extension(t_object* a_module) : ::xemmai::t_extension(a_module)
 	f_define<void (*)(GLenum), f_front_face>(this, L"front_face");
 	f_define<void (*)(GLenum), f_generate_mipmap>(this, L"generate_mipmap");
 	f_define<bool (*)(GLenum), f_get_boolean>(this, L"get_boolean");
-	f_define<t_transfer (*)(GLenum), f_get_booleans>(this, L"get_booleans");
+	f_define<t_scoped (*)(GLenum), f_get_booleans>(this, L"get_booleans");
 	f_define<GLint (*)(GLenum, GLenum), f_get_buffer_parameter>(this, L"get_buffer_parameter");
 	f_define<GLfloat (*)(GLenum), f_get_float>(this, L"get_float");
-	f_define<t_transfer (*)(GLenum), f_get_floats>(this, L"get_floats");
+	f_define<t_scoped (*)(GLenum), f_get_floats>(this, L"get_floats");
 	f_define<GLenum (*)(), f_get_error>(this, L"get_error");
 	f_define<GLint (*)(GLenum, GLenum, GLenum), f_get_framebuffer_attachment_parameter>(this, L"get_framebuffer_attachment_parameter");
 	f_define<GLint (*)(GLenum), f_get_integer>(this, L"get_integer");
-	f_define<t_transfer (*)(GLenum), f_get_integers>(this, L"get_integers");
+	f_define<t_scoped (*)(GLenum), f_get_integers>(this, L"get_integers");
 	f_define<GLint (*)(GLenum, GLenum), f_get_renderbuffer_parameter>(this, L"get_renderbuffer_parameter");
-	f_define<t_transfer (*)(GLenum, GLenum), f_get_shader_precision_format>(this, L"get_shader_precision_format");
+	f_define<t_scoped (*)(GLenum, GLenum), f_get_shader_precision_format>(this, L"get_shader_precision_format");
 	f_define<std::wstring (*)(GLenum), f_get_string>(this, L"get_string");
 	f_define<GLfloat (*)(GLenum, GLenum), f_get_tex_parameterf>(this, L"get_tex_parameterf");
-	f_define<t_transfer (*)(GLenum, GLenum), f_get_tex_parameterfv>(this, L"get_tex_parameterfv");
+	f_define<t_scoped (*)(GLenum, GLenum), f_get_tex_parameterfv>(this, L"get_tex_parameterfv");
 	f_define<GLint (*)(GLenum, GLenum), f_get_tex_parameteri>(this, L"get_tex_parameteri");
-	f_define<t_transfer (*)(GLenum, GLenum), f_get_tex_parameteriv>(this, L"get_tex_parameteriv");
+	f_define<t_scoped (*)(GLenum, GLenum), f_get_tex_parameteriv>(this, L"get_tex_parameteriv");
 	f_define<GLfloat (*)(GLuint, GLenum), f_get_vertex_attribf>(this, L"get_vertex_attribf");
-	f_define<t_transfer (*)(GLuint, GLenum), f_get_vertex_attribfv>(this, L"get_vertex_attribfv");
+	f_define<t_scoped (*)(GLuint, GLenum), f_get_vertex_attribfv>(this, L"get_vertex_attribfv");
 	f_define<GLint (*)(GLuint, GLenum), f_get_vertex_attribi>(this, L"get_vertex_attribi");
-	f_define<t_transfer (*)(GLuint, GLenum), f_get_vertex_attribiv>(this, L"get_vertex_attribiv");
+	f_define<t_scoped (*)(GLuint, GLenum), f_get_vertex_attribiv>(this, L"get_vertex_attribiv");
 	f_define<GLintptr (*)(GLuint, GLenum), f_get_vertex_attrib_pointer>(this, L"get_vertex_attrib_pointer");
 	f_define<void (*)(GLenum, GLenum), f_hint>(this, L"hint");
 	f_define<bool (*)(GLenum), f_is_enabled>(this, L"is_enabled");

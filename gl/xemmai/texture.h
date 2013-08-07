@@ -18,19 +18,19 @@ class t_texture
 	}
 	~t_texture()
 	{
-		v_entry->second.f_pointer__(0);
+		v_entry->second.f_pointer__(nullptr);
 		t_session* session = t_session::f_instance();
 		session->v_textures.erase(v_entry);
 	}
 
 public:
-	static t_transfer f_construct(t_object* a_class)
+	static t_scoped f_construct(t_object* a_class)
 	{
 		t_session* session = t_session::f_instance();
 		GLuint id;
 		glGenTextures(1, &id);
 		t_error::f_check();
-		t_transfer object = t_object::f_allocate(a_class);
+		t_scoped object = t_object::f_allocate(a_class);
 		object.f_pointer__(new t_texture(session->v_textures.insert(std::make_pair(id, static_cast<t_object*>(object))).first));
 		return object;
 	}
@@ -64,12 +64,10 @@ struct t_type_of<t_texture> : t_type
 
 	static void f_define(t_extension* a_extension);
 
-	t_type_of(const t_transfer& a_module, const t_transfer& a_super) : t_type(a_module, a_super)
-	{
-	}
+	using t_type::t_type;
 	virtual t_type* f_derive(t_object* a_this);
 	virtual void f_finalize(t_object* a_this);
-	virtual t_transfer f_construct(t_object* a_class, t_slot* a_stack, size_t a_n);
+	virtual t_scoped f_construct(t_object* a_class, t_slot* a_stack, size_t a_n);
 };
 
 }

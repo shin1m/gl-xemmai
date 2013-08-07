@@ -21,9 +21,8 @@ namespace xemmai
 using ::xemmai::t_object;
 using ::xemmai::t_scan;
 using ::xemmai::t_value;
-using ::xemmai::t_transfer;
-using ::xemmai::t_scoped;
 using ::xemmai::t_slot;
+using ::xemmai::t_scoped;
 using ::xemmai::t_fundamental;
 using ::xemmai::t_type_of;
 using ::xemmai::f_check;
@@ -33,7 +32,6 @@ using ::xemmai::f_global;
 using ::xemmai::t_tuple;
 using ::xemmai::t_throwable;
 using ::xemmai::t_bytes;
-using ::xemmai::portable::t_mutex;
 using ::xemmai::portable::f_convert;
 
 class t_extension;
@@ -48,8 +46,8 @@ class t_program;
 class t_shader;
 class t_uniform_location;
 
-t_transfer f_tuple(const t_transfer& a_0, const t_transfer& a_1, const t_transfer& a_2);
-t_transfer f_tuple(const t_transfer& a_0, const t_transfer& a_1, const t_transfer& a_2, const t_transfer& a_3);
+t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2);
+t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2, t_scoped&& a_3);
 
 class t_session
 {
@@ -61,7 +59,7 @@ class t_session
 	friend class t_program;
 	friend class t_shader;
 
-	static t_mutex v_mutex;
+	static std::mutex v_mutex;
 	static bool v_running;
 	static XEMMAI__PORTABLE__THREAD t_session* v_instance;
 #ifdef _WIN32
@@ -115,7 +113,7 @@ class t_extension : public ::xemmai::t_extension
 	t_slot v_type_uniform_location;
 
 	template<typename T>
-	void f_type__(const t_transfer& a_type);
+	void f_type__(t_scoped&& a_type);
 
 public:
 	t_extension(t_object* a_module);
@@ -131,7 +129,7 @@ public:
 		return f_global()->f_type<T>();
 	}
 	template<typename T>
-	t_transfer f_as(const T& a_value) const
+	t_scoped f_as(const T& a_value) const
 	{
 		typedef t_type_of<typename t_fundamental<T>::t_type> t;
 		return t::f_transfer(f_extension<typename t::t_extension>(), a_value);
@@ -139,69 +137,69 @@ public:
 };
 
 template<>
-inline void t_extension::f_type__<t_array_of<short> >(const t_transfer& a_type)
+inline void t_extension::f_type__<t_array_of<short> >(t_scoped&& a_type)
 {
-	v_type_array_of_int16 = a_type;
+	v_type_array_of_int16 = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_array_of<int> >(const t_transfer& a_type)
+inline void t_extension::f_type__<t_array_of<int> >(t_scoped&& a_type)
 {
-	v_type_array_of_int32 = a_type;
+	v_type_array_of_int32 = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_array_of<float> >(const t_transfer& a_type)
+inline void t_extension::f_type__<t_array_of<float> >(t_scoped&& a_type)
 {
-	v_type_array_of_float32 = a_type;
+	v_type_array_of_float32 = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_error>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_error>(t_scoped&& a_type)
 {
-	v_type_error = a_type;
+	v_type_error = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_buffer>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_buffer>(t_scoped&& a_type)
 {
-	v_type_buffer = a_type;
+	v_type_buffer = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_framebuffer>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_framebuffer>(t_scoped&& a_type)
 {
-	v_type_framebuffer = a_type;
+	v_type_framebuffer = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_renderbuffer>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_renderbuffer>(t_scoped&& a_type)
 {
-	v_type_renderbuffer = a_type;
+	v_type_renderbuffer = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_texture>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_texture>(t_scoped&& a_type)
 {
-	v_type_texture = a_type;
+	v_type_texture = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_program>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_program>(t_scoped&& a_type)
 {
-	v_type_program = a_type;
+	v_type_program = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_shader>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_shader>(t_scoped&& a_type)
 {
-	v_type_shader = a_type;
+	v_type_shader = std::move(a_type);
 }
 
 template<>
-inline void t_extension::f_type__<t_uniform_location>(const t_transfer& a_type)
+inline void t_extension::f_type__<t_uniform_location>(t_scoped&& a_type)
 {
-	v_type_uniform_location = a_type;
+	v_type_uniform_location = std::move(a_type);
 }
 
 template<>

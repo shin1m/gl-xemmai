@@ -30,7 +30,7 @@ void t_type_of<t_uniform_location>::f_define(t_extension* a_extension)
 
 t_type* t_type_of<t_uniform_location>::f_derive(t_object* a_this)
 {
-	return 0;
+	return nullptr;
 }
 
 void t_type_of<t_uniform_location>::f_finalize(t_object* a_this)

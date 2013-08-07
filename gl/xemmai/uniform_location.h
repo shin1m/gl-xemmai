@@ -113,17 +113,15 @@ struct t_type_of<t_uniform_location> : t_type
 {
 	typedef gl::xemmai::t_extension t_extension;
 
-	static t_transfer f_transfer(const t_extension* a_extension, const t_uniform_location& a_value)
+	static t_scoped f_transfer(const t_extension* a_extension, const t_uniform_location& a_value)
 	{
-		t_transfer object = t_object::f_allocate(a_extension->f_type<t_uniform_location>());
+		t_scoped object = t_object::f_allocate(a_extension->f_type<t_uniform_location>());
 		object.f_pointer__(new t_uniform_location(a_value));
 		return object;
 	}
 	static void f_define(t_extension* a_extension);
 
-	t_type_of(const t_transfer& a_module, const t_transfer& a_super) : t_type(a_module, a_super)
-	{
-	}
+	using t_type::t_type;
 	virtual t_type* f_derive(t_object* a_this);
 	virtual void f_finalize(t_object* a_this);
 	virtual void f_instantiate(t_object* a_class, t_slot* a_stack, size_t a_n);
