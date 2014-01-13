@@ -1,9 +1,9 @@
-AC_INIT([gl-xemmai], [201308])
+AC_INIT([gl-xemmai], [201401])
 AM_INIT_AUTOMAKE([foreign nostdinc dist-bzip2 no-dist-gzip])
 AC_CONFIG_SRCDIR([gl/xemmai/gl.cc])
 
 PKG_CHECK_MODULES([GL], [gl >= 7.11])
-XEMMAI_USE=xemmai-201308
+XEMMAI_USE=xemmai-201401
 PKG_CHECK_MODULES([XEMMAI], [${XEMMAI_USE}], [
 	XEMMAI_MODULE_PATH=`pkg-config --variable=module_path ${XEMMAI_USE}`
 ])
