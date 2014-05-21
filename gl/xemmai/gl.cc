@@ -79,61 +79,73 @@ inline void f_main(t_extension* a_extension, const t_value& a_callable)
 inline void f_active_texture(GLenum a_texture)
 {
 	glActiveTexture(a_texture);
+	t_error::f_check();
 }
 
 inline void f_bind_buffer(GLenum a_target, const t_buffer* a_buffer)
 {
 	glBindBuffer(a_target, a_buffer ? a_buffer->f_id() : 0);
+	t_error::f_check();
 }
 
 inline void f_bind_framebuffer(GLenum a_target, const t_framebuffer* a_framebuffer)
 {
 	glBindFramebuffer(a_target, a_framebuffer ? a_framebuffer->f_id() : 0);
+	t_error::f_check();
 }
 
 inline void f_bind_renderbuffer(GLenum a_target, const t_renderbuffer* a_renderbuffer)
 {
 	glBindRenderbuffer(a_target, a_renderbuffer ? a_renderbuffer->f_id() : 0);
+	t_error::f_check();
 }
 
 inline void f_bind_texture(GLenum a_target, const t_texture* a_texture)
 {
 	glBindTexture(a_target, a_texture ? a_texture->f_id() : 0);
+	t_error::f_check();
 }
 
 inline void f_blend_color(GLclampf a_red, GLclampf a_green, GLclampf a_blue, GLclampf a_alpha)
 {
 	glBlendColor(a_red, a_green, a_blue, a_alpha);
+	t_error::f_check();
 }
 
 inline void f_blend_equation(GLenum a_mode)
 {
 	glBlendEquation(a_mode);
+	t_error::f_check();
 }
 
 inline void f_blend_equation_separate(GLenum a_mode_rgb, GLenum a_mode_alpha)
 {
 	glBlendEquationSeparate(a_mode_rgb, a_mode_alpha);
+	t_error::f_check();
 }
 
 inline void f_blend_func(GLenum a_sfactor, GLenum a_dfactor)
 {
 	glBlendFunc(a_sfactor, a_dfactor);
+	t_error::f_check();
 }
 
 inline void f_blend_func_separate(GLenum a_sfactor_rgb, GLenum a_dfactor_rgb, GLenum a_sfactor_alpha, GLenum a_dfactor_alpha)
 {
 	glBlendFuncSeparate(a_sfactor_rgb, a_dfactor_rgb, a_sfactor_alpha, a_dfactor_alpha);
+	t_error::f_check();
 }
 
 inline void f_buffer_data(GLenum a_target, const t_bytes& a_data, GLenum a_usage)
 {
 	glBufferData(a_target, a_data.f_size(), &a_data[0], a_usage);
+	t_error::f_check();
 }
 
 inline void f_buffer_sub_data(GLenum a_target, GLintptr a_offset, const t_bytes& a_data)
 {
 	glBufferSubData(a_target, a_offset, a_data.f_size(), &a_data[0]);
+	t_error::f_check();
 }
 
 inline GLenum f_check_framebuffer_status(GLenum a_target)
@@ -144,116 +156,139 @@ inline GLenum f_check_framebuffer_status(GLenum a_target)
 inline void f_clear(GLbitfield a_mask)
 {
 	glClear(a_mask);
+	t_error::f_check();
 }
 
 inline void f_clear_color(GLclampf a_red, GLclampf a_green, GLclampf a_blue, GLclampf a_alpha)
 {
 	glClearColor(a_red, a_green, a_blue, a_alpha);
+	t_error::f_check();
 }
 
 inline void f_clear_depthf(GLclampf a_depth)
 {
 	glClearDepthf(a_depth);
+	t_error::f_check();
 }
 
 inline void f_clear_stencil(GLint a_s)
 {
 	glClearStencil(a_s);
+	t_error::f_check();
 }
 
 inline void f_color_mask(bool a_red, bool a_green, bool a_blue, bool a_alpha)
 {
 	glColorMask(a_red ? GL_TRUE : GL_FALSE, a_green ? GL_TRUE : GL_FALSE, a_blue ? GL_TRUE : GL_FALSE, a_alpha ? GL_TRUE : GL_FALSE);
+	t_error::f_check();
 }
 
 inline void f_copy_tex_image2d(GLenum a_target, GLint a_level, GLenum a_internal_format, GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height, GLint a_border)
 {
 	glCopyTexImage2D(a_target, a_level, a_internal_format, a_x, a_y, a_width, a_height, a_border);
+	t_error::f_check();
 }
 
 inline void f_copy_tex_sub_image2d(GLenum a_target, GLint a_level, GLint a_xoffset, GLint a_yoffset, GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height)
 {
 	glCopyTexSubImage2D(a_target, a_level, a_xoffset, a_yoffset, a_x, a_y, a_width, a_height);
+	t_error::f_check();
 }
 
 inline void f_cull_face(GLenum a_mode)
 {
 	glCullFace(a_mode);
+	t_error::f_check();
 }
 
 inline void f_depth_func(GLenum a_func)
 {
 	glDepthFunc(a_func);
+	t_error::f_check();
 }
 
 inline void f_depth_mask(bool a_flag)
 {
 	glDepthMask(a_flag ? GL_TRUE : GL_FALSE);
+	t_error::f_check();
 }
 
 inline void f_depth_rangef(GLclampf a_n, GLclampf a_f)
 {
 	glDepthRangef(a_n, a_f);
+	t_error::f_check();
 }
 
 inline void f_disable(GLenum a_cap)
 {
 	glDisable(a_cap);
+	t_error::f_check();
 }
 
 inline void f_disable_vertex_attrib_array(GLuint a_index)
 {
 	glDisableVertexAttribArray(a_index);
+	t_error::f_check();
 }
 
 inline void f_draw_arrays(GLenum a_mode, GLint a_first, GLsizei a_count)
 {
 	glDrawArrays(a_mode, a_first, a_count);
+	t_error::f_check();
 }
 
 inline void f_draw_elements(GLenum a_mode, GLsizei a_count, GLenum a_type, GLintptr a_offset)
 {
 	glDrawElements(a_mode, a_count, a_type, reinterpret_cast<const GLvoid*>(a_offset));
+	t_error::f_check();
 }
 
 inline void f_enable(GLenum a_cap)
 {
 	glEnable(a_cap);
+	t_error::f_check();
 }
 
 inline void f_enable_vertex_attrib_array(GLuint a_index)
 {
 	glEnableVertexAttribArray(a_index);
+	t_error::f_check();
 }
 
 inline void f_finish()
 {
 	glFinish();
+	t_error::f_check();
 }
 
 inline void f_flush()
 {
 	glFlush();
+	t_error::f_check();
 }
 
 inline void f_framebuffer_renderbuffer(GLenum a_target, GLenum a_attachment, GLenum a_renderbuffertarget, const t_renderbuffer* a_renderbuffer)
 {
 	glFramebufferRenderbuffer(a_target, a_attachment, a_renderbuffertarget, a_renderbuffer ? a_renderbuffer->f_id() : 0);
+	t_error::f_check();
 }
 
 inline void f_framebuffer_texture2d(GLenum a_target, GLenum a_attachment, GLenum a_textarget, const t_texture* a_texture, GLint a_level)
 {
 	glFramebufferTexture2D(a_target, a_attachment, a_textarget, a_texture ? a_texture->f_id() : 0, a_level);
+	t_error::f_check();
 }
 
 inline void f_front_face(GLenum a_mode)
 {
 	glFrontFace(a_mode);
+	t_error::f_check();
 }
 
 inline void f_generate_mipmap(GLenum a_target)
 {
 	glGenerateMipmap(a_target);
+	t_error::f_check();
 }
 
 inline bool f_get_boolean(GLenum a_name)
@@ -403,6 +438,7 @@ inline GLintptr f_get_vertex_attrib_pointer(GLuint a_index, GLenum a_name)
 inline void f_hint(GLenum a_target, GLenum a_mode)
 {
 	glHint(a_target, a_mode);
+	t_error::f_check();
 }
 
 inline bool f_is_enabled(GLenum a_capability)
@@ -413,16 +449,19 @@ inline bool f_is_enabled(GLenum a_capability)
 inline void f_line_width(GLfloat a_width)
 {
 	glLineWidth(a_width);
+	t_error::f_check();
 }
 
 inline void f_pixel_storei(GLenum a_pname, GLint a_param)
 {
 	glPixelStorei(a_pname, a_param);
+	t_error::f_check();
 }
 
 inline void f_polygon_offset(GLfloat a_factor, GLfloat a_units)
 {
 	glPolygonOffset(a_factor, a_units);
+	t_error::f_check();
 }
 
 inline void f_read_pixels(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height, GLenum a_format, GLenum a_type, t_bytes& a_data)
@@ -490,132 +529,156 @@ inline void f_read_pixels(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_heigh
 	}
 	if (a_data.f_size() < a_width * a_height * n) t_error::f_throw(GL_INVALID_OPERATION);
 	glReadPixels(a_x, a_y, a_width, a_height, a_format, a_type, &a_data[0]);
+	t_error::f_check();
 }
 
 inline void f_release_shader_compiler()
 {
 	glReleaseShaderCompiler();
+	t_error::f_check();
 }
 
 inline void f_renderbuffer_storage(GLenum a_target, GLenum a_internalformat, GLsizei a_width, GLsizei a_height)
 {
 	glRenderbufferStorage(a_target, a_internalformat, a_width, a_height);
+	t_error::f_check();
 }
 
 inline void f_sample_coverage(GLclampf a_value, bool a_invert)
 {
 	glSampleCoverage(a_value, a_invert ? GL_TRUE : GL_FALSE);
+	t_error::f_check();
 }
 
 inline void f_scissor(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height)
 {
 	glScissor(a_x, a_y, a_width, a_height);
+	t_error::f_check();
 }
 
 inline void f_stencil_func(GLenum a_func, GLint a_ref, GLuint a_mask)
 {
 	glStencilFunc(a_func, a_ref, a_mask);
+	t_error::f_check();
 }
 
 inline void f_stencil_func_separate(GLenum a_frontfunc, GLenum a_backfunc, GLint a_ref, GLuint a_mask)
 {
 	glStencilFuncSeparate(a_frontfunc, a_backfunc, a_ref, a_mask);
+	t_error::f_check();
 }
 
 inline void f_stencil_mask(GLuint a_mask)
 {
 	glStencilMask(a_mask);
+	t_error::f_check();
 }
 
 inline void f_stencil_mask_separate(GLenum a_face, GLuint a_mask)
 {
 	glStencilMaskSeparate(a_face, a_mask);
+	t_error::f_check();
 }
 
 inline void f_stencil_op(GLenum a_fail, GLenum a_zfail, GLenum a_zpass)
 {
 	glStencilOp(a_fail, a_zfail, a_zpass);
+	t_error::f_check();
 }
 
 inline void f_stencil_op_separate(GLenum a_face, GLenum a_sfail, GLenum a_dpfail, GLenum a_dppass)
 {
 	glStencilOpSeparate(a_face, a_sfail, a_dpfail, a_dppass);
+	t_error::f_check();
 }
 
 inline void f_tex_image2d(GLenum a_target, GLint a_level, GLint a_internalformat, GLsizei a_width, GLsizei a_height, GLint a_border, GLenum a_format, GLenum a_type, const t_bytes& a_pixels)
 {
 	glTexImage2D(a_target, a_level, a_internalformat, a_width, a_height, a_border, a_format, a_type, &a_pixels[0]);
+	t_error::f_check();
 }
 
 inline void f_tex_parameterf(GLenum a_target, GLenum a_pname, GLfloat a_param)
 {
 	glTexParameterf(a_target, a_pname, a_param);
+	t_error::f_check();
 }
 
 inline void f_tex_parameter4f(GLenum a_target, GLenum a_name, GLfloat a_value0, GLfloat a_value1, GLfloat a_value2, GLfloat a_value3)
 {
 	GLfloat values[] = {a_value0, a_value1, a_value2, a_value3};
 	glTexParameterfv(a_target, a_name, values);
+	t_error::f_check();
 }
 
 inline void f_tex_parameteri(GLenum a_target, GLenum a_pname, GLint a_param)
 {
 	glTexParameteri(a_target, a_pname, a_param);
+	t_error::f_check();
 }
 
 inline void f_tex_parameter4i(GLenum a_target, GLenum a_name, GLint a_value0, GLint a_value1, GLint a_value2, GLint a_value3)
 {
 	GLint values[] = {a_value0, a_value1, a_value2, a_value3};
 	glTexParameteriv(a_target, a_name, values);
+	t_error::f_check();
 }
 
 inline void f_tex_sub_image2d(GLenum a_target, GLint a_level, GLint a_xoffset, GLint a_yoffset, GLsizei a_width, GLsizei a_height, GLenum a_format, GLenum a_type, const t_bytes& a_pixels)
 {
 	glTexSubImage2D(a_target, a_level, a_xoffset, a_yoffset, a_width, a_height, a_format, a_type, &a_pixels[0]);
+	t_error::f_check();
 }
 
 inline void f_vertex_attrib_pointer(GLuint a_index, GLint a_size, GLenum a_type, bool a_normalized, GLsizei a_stride, GLintptr a_offset)
 {
 	glVertexAttribPointer(a_index, a_size, a_type, a_normalized ? GL_TRUE : GL_FALSE, a_stride, reinterpret_cast<const GLvoid*>(a_offset));
+	t_error::f_check();
 }
 
 inline void f_viewport(GLint a_x, GLint a_y, GLsizei a_width, GLsizei a_height)
 {
 	glViewport(a_x, a_y, a_width, a_height);
+	t_error::f_check();
 }
 
 inline void f_use_program(const t_program* a_program)
 {
 	glUseProgram(a_program ? a_program->f_id() : 0);
+	t_error::f_check();
 }
 
 inline void f_vertex_attrib1f(GLuint a_index, GLfloat a_x)
 {
 	glVertexAttrib1f(a_index, a_x);
+	t_error::f_check();
 }
 
 inline void f_vertex_attrib2f(GLuint a_index, GLfloat a_x, GLfloat a_y)
 {
 	glVertexAttrib2f(a_index, a_x, a_y);
+	t_error::f_check();
 }
 
 inline void f_vertex_attrib3f(GLuint a_index, GLfloat a_x, GLfloat a_y, GLfloat a_z)
 {
 	glVertexAttrib3f(a_index, a_x, a_y, a_z);
+	t_error::f_check();
 }
 
 inline void f_vertex_attrib4f(GLuint a_index, GLfloat a_x, GLfloat a_y, GLfloat a_z, GLfloat a_w)
 {
 	glVertexAttrib4f(a_index, a_x, a_y, a_z, a_w);
+	t_error::f_check();
 }
 
 }
 
 t_extension::t_extension(t_object* a_module) : ::xemmai::t_extension(a_module)
 {
-	t_type_of<t_array_of<int16_t> >::f_define(this, L"Int16Array");
-	t_type_of<t_array_of<int32_t> >::f_define(this, L"Int32Array");
-	t_type_of<t_array_of<float> >::f_define(this, L"Float32Array");
+	t_type_of<t_array_of<int16_t>>::f_define(this, L"Int16Array");
+	t_type_of<t_array_of<int32_t>>::f_define(this, L"Int32Array");
+	t_type_of<t_array_of<float>>::f_define(this, L"Float32Array");
 	t_type_of<t_error>::f_define(this);
 	t_type_of<t_buffer>::f_define(this);
 	t_type_of<t_framebuffer>::f_define(this);

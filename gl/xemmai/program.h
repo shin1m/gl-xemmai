@@ -48,14 +48,17 @@ public:
 	void f_attach_shader(const t_shader& a_shader)
 	{
 		glAttachShader(f_id(), a_shader.f_id());
+		t_error::f_check();
 	}
 	void f_bind_attrib_location(GLuint a_index, const std::wstring& a_name)
 	{
 		glBindAttribLocation(f_id(), a_index, f_convert(a_name).c_str());
+		t_error::f_check();
 	}
 	void f_detach_shader(const t_shader& a_shader)
 	{
 		glDetachShader(f_id(), a_shader.f_id());
+		t_error::f_check();
 	}
 	t_scoped f_get_active_attrib(GLuint a_index) const
 	{
@@ -78,7 +81,9 @@ public:
 	t_scoped f_get_attached_shaders() const;
 	GLint f_get_attrib_location(const std::wstring& a_name) const
 	{
-		return glGetAttribLocation(f_id(), f_convert(a_name).c_str());
+		GLint index = glGetAttribLocation(f_id(), f_convert(a_name).c_str());
+		if (index < 0) t_error::f_throw(glGetError());
+		return index;
 	}
 	GLint f_get_parameteri(GLenum a_name) const
 	{
@@ -97,7 +102,9 @@ public:
 	t_scoped f_get_uniformiv(const t_uniform_location& a_location) const;
 	t_uniform_location f_get_uniform_location(const std::wstring& a_name) const
 	{
-		return glGetUniformLocation(f_id(), f_convert(a_name).c_str());
+		GLint index = glGetUniformLocation(f_id(), f_convert(a_name).c_str());
+		if (index < 0) t_error::f_throw(glGetError());
+		return index;
 	}
 	void f_link()
 	{
