@@ -32,18 +32,17 @@ public:
 	t_array_of(t_scoped&& a_bytes, size_t a_offset) : v_bytes(std::move(a_bytes))
 	{
 		if (a_offset % sizeof(T) > 0) t_throwable::f_throw(L"offset must be multiple of element size.");
-		f_check(a_offset);
 		t_bytes& bytes = f_as<t_bytes&>(v_bytes);
+		if (a_offset > bytes.f_size()) t_throwable::f_throw(L"out of range.");
 		v_size = (bytes.f_size() - a_offset) / sizeof(T);
 		v_values = reinterpret_cast<T*>(&bytes[0] + a_offset);
 	}
-	t_array_of(t_scoped&& a_bytes, size_t a_offset, size_t a_size) : v_bytes(std::move(a_bytes))
+	t_array_of(t_scoped&& a_bytes, size_t a_offset, size_t a_size) : v_bytes(std::move(a_bytes)), v_size(a_size)
 	{
 		if (a_offset % sizeof(T) > 0) t_throwable::f_throw(L"offset must be multiple of element size.");
-		f_check(a_offset);
-		f_check(a_offset + a_size * sizeof(T));
-		v_size = a_size;
-		v_values = reinterpret_cast<T*>(&f_as<t_bytes&>(v_bytes)[0] + a_offset);
+		t_bytes& bytes = f_as<t_bytes&>(v_bytes);
+		if (a_offset + v_size * sizeof(T) > bytes.f_size()) t_throwable::f_throw(L"out of range.");
+		v_values = reinterpret_cast<T*>(&bytes[0] + a_offset);
 	}
 	size_t f_size() const
 	{
