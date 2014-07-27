@@ -61,7 +61,7 @@ class t_session
 
 	static std::mutex v_mutex;
 	static bool v_running;
-	static thread_local t_session* v_instance;
+	static XEMMAI__PORTABLE__THREAD t_session* v_instance;
 #ifdef _WIN32
 	static bool v_glew;
 #endif
