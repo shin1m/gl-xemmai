@@ -38,7 +38,7 @@ void t_type_of<t_uniform_location>::f_finalize(t_object* a_this)
 	delete &f_as<t_uniform_location&>(a_this);
 }
 
-void t_type_of<t_uniform_location>::f_instantiate(t_object* a_class, t_slot* a_stack, size_t a_n)
+void t_type_of<t_uniform_location>::f_instantiate(t_object* a_class, t_scoped* a_stack, size_t a_n)
 {
 	t_throwable::f_throw(L"uninstantiatable.");
 }

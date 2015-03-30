@@ -23,7 +23,7 @@ void t_type_of<t_renderbuffer>::f_finalize(t_object* a_this)
 	assert(!p);
 }
 
-t_scoped t_type_of<t_renderbuffer>::f_construct(t_object* a_class, t_slot* a_stack, size_t a_n)
+t_scoped t_type_of<t_renderbuffer>::f_construct(t_object* a_class, t_scoped* a_stack, size_t a_n)
 {
 	return t_construct_with<t_scoped (*)(t_object*), t_renderbuffer::f_construct>::t_bind<t_renderbuffer>::f_do(a_class, a_stack, a_n);
 }
