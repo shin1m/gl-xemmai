@@ -143,7 +143,7 @@ struct t_type_of<t_uniform_location> : t_type
 	using t_type::t_type;
 	virtual t_type* f_derive(t_object* a_this);
 	virtual void f_finalize(t_object* a_this);
-	virtual void f_instantiate(t_object* a_class, t_scoped* a_stack, size_t a_n);
+	virtual void f_instantiate(t_object* a_class, t_stacked* a_stack, size_t a_n);
 };
 
 }
