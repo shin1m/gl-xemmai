@@ -1,13 +1,13 @@
-#ifndef GL__XEMMAI__PROGRAM_H
-#define GL__XEMMAI__PROGRAM_H
+#ifndef XEMMAIX__GL__PROGRAM_H
+#define XEMMAIX__GL__PROGRAM_H
 
 #include "shader.h"
 #include "uniform_location.h"
 
-namespace gl
+namespace xemmaix
 {
 
-namespace xemmai
+namespace gl
 {
 
 class t_program
@@ -123,13 +123,11 @@ public:
 namespace xemmai
 {
 
-using gl::xemmai::t_program;
-
 template<>
-struct t_type_of<t_program> : t_type
+struct t_type_of<xemmaix::gl::t_program> : t_type
 {
 #include "cast.h"
-	typedef gl::xemmai::t_extension t_extension;
+	typedef xemmaix::gl::t_extension t_extension;
 
 	static void f_define(t_extension* a_extension);
 

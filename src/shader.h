@@ -1,12 +1,12 @@
-#ifndef GL__XEMMAI__SHADER_H
-#define GL__XEMMAI__SHADER_H
+#ifndef XEMMAIX__GL__SHADER_H
+#define XEMMAIX__GL__SHADER_H
 
 #include "error.h"
 
-namespace gl
+namespace xemmaix
 {
 
-namespace xemmai
+namespace gl
 {
 
 class t_shader
@@ -83,13 +83,11 @@ public:
 namespace xemmai
 {
 
-using gl::xemmai::t_shader;
-
 template<>
-struct t_type_of<t_shader> : t_type
+struct t_type_of<xemmaix::gl::t_shader> : t_type
 {
 #include "cast.h"
-	typedef gl::xemmai::t_extension t_extension;
+	typedef xemmaix::gl::t_extension t_extension;
 
 	static void f_define(t_extension* a_extension);
 

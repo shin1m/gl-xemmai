@@ -1,5 +1,5 @@
-#ifndef GL__XEMMAI__GL_H
-#define GL__XEMMAI__GL_H
+#ifndef XEMMAIX__GL__GL_H
+#define XEMMAIX__GL__GL_H
 
 #include <map>
 #include <xemmai/convert.h>
@@ -12,27 +12,14 @@
 #include <GL/gl.h>
 #endif
 
+namespace xemmaix
+{
+
 namespace gl
 {
 
-namespace xemmai
-{
-
-using ::xemmai::t_object;
-using ::xemmai::t_scan;
-using ::xemmai::t_value;
-using ::xemmai::t_slot;
-using ::xemmai::t_scoped;
-using ::xemmai::t_fundamental;
-using ::xemmai::t_type_of;
-using ::xemmai::f_check;
-using ::xemmai::f_as;
-using ::xemmai::t_define;
-using ::xemmai::f_global;
-using ::xemmai::t_tuple;
-using ::xemmai::t_throwable;
-using ::xemmai::t_bytes;
-using ::xemmai::portable::f_convert;
+using namespace xemmai;
+using namespace xemmai::portable;
 
 class t_extension;
 template<typename T>
@@ -96,9 +83,9 @@ public:
 	}
 };
 
-class t_extension : public ::xemmai::t_extension
+class t_extension : public xemmai::t_extension
 {
-	template<typename T, typename T_super> friend class t_define;
+	template<typename T, typename T_super> friend class xemmai::t_define;
 
 	t_slot v_type_array_of_int16;
 	t_slot v_type_array_of_int32;

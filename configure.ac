@@ -1,9 +1,9 @@
-AC_INIT([gl-xemmai], [201706])
+AC_INIT([gl-xemmai], [201708])
 AM_INIT_AUTOMAKE([foreign nostdinc dist-bzip2 no-dist-gzip])
-AC_CONFIG_SRCDIR([gl/xemmai/gl.cc])
+AC_CONFIG_SRCDIR([src/gl.cc])
 
 PKG_CHECK_MODULES([GL], [gl >= 7.11])
-XEMMAI_USE=xemmai-201706
+XEMMAI_USE=xemmai-201708
 PKG_CHECK_MODULES([XEMMAI], [${XEMMAI_USE}], [
 	XEMMAI_MODULE_PATH=`pkg-config --variable=module_path ${XEMMAI_USE}`
 ])
@@ -43,9 +43,9 @@ AC_ARG_ENABLE(
 )
 AM_CONDITIONAL([PROFILE], [test x$profile = xtrue])
 
-AC_CONFIG_HEADERS([gl/xemmai/configure.h])
+AC_CONFIG_HEADERS([src/configure.h])
 AC_CONFIG_FILES([
 	Makefile
-	gl/xemmai/Makefile
+	src/Makefile
 ])
 AC_OUTPUT

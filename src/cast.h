@@ -3,7 +3,7 @@
 	{
 		static T0* f_call(T1 a_object)
 		{
-			gl::xemmai::t_session::f_instance();
+			xemmaix::gl::t_session::f_instance();
 			T0* p = static_cast<T0*>(f_object(a_object)->f_pointer());
 			if (!p) t_throwable::f_throw(L"already destroyed.");
 			return p;
@@ -44,7 +44,6 @@
 	{
 		static bool f_call(T1 a_object)
 		{
-			using namespace ::xemmai;
 			return reinterpret_cast<size_t>(f_object(a_object)) >= t_value::e_tag__OBJECT && dynamic_cast<t_type_of<typename t_fundamental<T0>::t_type>*>(f_as<t_type*>(f_object(a_object)->f_type())) != 0;
 		}
 	};
@@ -53,7 +52,6 @@
 	{
 		static bool f_call(T1 a_object)
 		{
-			using namespace ::xemmai;
 			switch (reinterpret_cast<size_t>(f_object(a_object))) {
 			case t_value::e_tag__NULL:
 				return true;

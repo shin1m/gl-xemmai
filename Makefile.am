@@ -1,1 +1,1 @@
-SUBDIRS = gl/xemmai
+SUBDIRS = src

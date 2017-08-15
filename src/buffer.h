@@ -1,12 +1,12 @@
-#ifndef GL__XEMMAI__BUFFER_H
-#define GL__XEMMAI__BUFFER_H
+#ifndef XEMMAIX__GL__BUFFER_H
+#define XEMMAIX__GL__BUFFER_H
 
 #include "error.h"
 
-namespace gl
+namespace xemmaix
 {
 
-namespace xemmai
+namespace gl
 {
 
 class t_buffer
@@ -54,13 +54,11 @@ public:
 namespace xemmai
 {
 
-using gl::xemmai::t_buffer;
-
 template<>
-struct t_type_of<t_buffer> : t_type
+struct t_type_of<xemmaix::gl::t_buffer> : t_type
 {
 #include "cast.h"
-	typedef gl::xemmai::t_extension t_extension;
+	typedef xemmaix::gl::t_extension t_extension;
 
 	static void f_define(t_extension* a_extension);
 

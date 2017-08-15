@@ -1,12 +1,12 @@
-#ifndef GL__XEMMAI__ERROR_H
-#define GL__XEMMAI__ERROR_H
+#ifndef XEMMAIX__GL__ERROR_H
+#define XEMMAIX__GL__ERROR_H
 
 #include "gl.h"
 
-namespace gl
+namespace xemmaix
 {
 
-namespace xemmai
+namespace gl
 {
 
 class t_error : public t_throwable
@@ -37,12 +37,10 @@ public:
 namespace xemmai
 {
 
-using gl::xemmai::t_error;
-
 template<>
-struct t_type_of<t_error> : t_type_of<t_throwable>
+struct t_type_of<xemmaix::gl::t_error> : t_type_of<t_throwable>
 {
-	typedef gl::xemmai::t_extension t_extension;
+	typedef xemmaix::gl::t_extension t_extension;
 
 	static void f_define(t_extension* a_extension);
 

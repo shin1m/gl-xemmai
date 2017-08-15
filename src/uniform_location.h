@@ -1,12 +1,12 @@
-#ifndef GL__XEMMAI__UNIFORM_LOCATION_H
-#define GL__XEMMAI__UNIFORM_LOCATION_H
+#ifndef XEMMAIX__GL__UNIFORM_LOCATION_H
+#define XEMMAIX__GL__UNIFORM_LOCATION_H
 
 #include "error.h"
 
-namespace gl
+namespace xemmaix
 {
 
-namespace xemmai
+namespace gl
 {
 
 class t_uniform_location
@@ -125,17 +125,15 @@ public:
 namespace xemmai
 {
 
-using gl::xemmai::t_uniform_location;
-
 template<>
-struct t_type_of<t_uniform_location> : t_type
+struct t_type_of<xemmaix::gl::t_uniform_location> : t_type
 {
-	typedef gl::xemmai::t_extension t_extension;
+	typedef xemmaix::gl::t_extension t_extension;
 
-	static t_scoped f_transfer(const t_extension* a_extension, const t_uniform_location& a_value)
+	static t_scoped f_transfer(const t_extension* a_extension, const xemmaix::gl::t_uniform_location& a_value)
 	{
-		t_scoped object = t_object::f_allocate(a_extension->f_type<t_uniform_location>());
-		object.f_pointer__(new t_uniform_location(a_value));
+		t_scoped object = t_object::f_allocate(a_extension->f_type<xemmaix::gl::t_uniform_location>());
+		object.f_pointer__(new xemmaix::gl::t_uniform_location(a_value));
 		return object;
 	}
 	static void f_define(t_extension* a_extension);
