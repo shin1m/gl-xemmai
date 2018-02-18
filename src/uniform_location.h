@@ -3,10 +3,7 @@
 
 #include "error.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 class t_uniform_location
@@ -117,8 +114,6 @@ public:
 		t_error::f_check();
 	}
 };
-
-}
 
 }
 

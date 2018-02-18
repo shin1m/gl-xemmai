@@ -3,10 +3,7 @@
 
 #include "gl.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 template<typename T>
@@ -59,8 +56,6 @@ public:
 		return v_values[a_index] = a_value;
 	}
 };
-
-}
 
 }
 

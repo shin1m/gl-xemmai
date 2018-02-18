@@ -3,10 +3,7 @@
 
 #include "error.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 class t_shader
@@ -75,8 +72,6 @@ public:
 		glShaderSource(f_id(), 1, &p, NULL);
 	}
 };
-
-}
 
 }
 

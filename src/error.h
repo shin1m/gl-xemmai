@@ -3,10 +3,7 @@
 
 #include "gl.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 class t_error : public t_throwable
@@ -29,8 +26,6 @@ public:
 		return v_error;
 	}
 };
-
-}
 
 }
 

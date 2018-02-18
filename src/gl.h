@@ -12,10 +12,7 @@
 #include <GL/gl.h>
 #endif
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 using namespace xemmai;
@@ -259,8 +256,6 @@ template<>
 inline t_object* t_extension::f_type<t_uniform_location>() const
 {
 	return v_type_uniform_location;
-}
-
 }
 
 }

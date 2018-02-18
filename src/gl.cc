@@ -9,10 +9,7 @@
 #include "texture.h"
 #include "program.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 using namespace xemmai;
@@ -1090,8 +1087,6 @@ void t_extension::f_scan(t_scan a_scan)
 	a_scan(v_type_program);
 	a_scan(v_type_shader);
 	a_scan(v_type_uniform_location);
-}
-
 }
 
 }

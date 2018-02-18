@@ -1,9 +1,6 @@
 #include "error.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 void t_error::f_throw(GLenum a_error)
@@ -12,8 +9,6 @@ void t_error::f_throw(GLenum a_error)
 	t_scoped object = t_object::f_allocate(session->v_extension->f_type<t_error>());
 	object.f_pointer__(new t_error(L"error", a_error));
 	throw object;
-}
-
 }
 
 }

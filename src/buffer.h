@@ -3,10 +3,7 @@
 
 #include "error.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 class t_buffer
@@ -46,8 +43,6 @@ public:
 		delete this;
 	}
 };
-
-}
 
 }
 

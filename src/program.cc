@@ -2,10 +2,7 @@
 
 #include <cassert>
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 t_scoped t_program::f_get_attached_shaders() const
@@ -34,8 +31,6 @@ t_scoped t_program::f_get_uniformiv(const t_uniform_location& a_location) const
 	t_bytes& bytes = f_as<t_bytes&>(p);
 	glGetUniformiv(f_id(), a_location.f_id(), reinterpret_cast<GLint*>(&bytes[0]));
 	return p;
-}
-
 }
 
 }

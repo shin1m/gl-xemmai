@@ -4,10 +4,7 @@
 #include "shader.h"
 #include "uniform_location.h"
 
-namespace xemmaix
-{
-
-namespace gl
+namespace xemmaix::gl
 {
 
 class t_program
@@ -115,8 +112,6 @@ public:
 		glValidateProgram(f_id());
 	}
 };
-
-}
 
 }
 
