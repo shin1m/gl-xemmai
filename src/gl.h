@@ -30,9 +30,6 @@ class t_program;
 class t_shader;
 class t_uniform_location;
 
-t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2);
-t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2, t_scoped&& a_3);
-
 class t_session
 {
 	friend class t_error;

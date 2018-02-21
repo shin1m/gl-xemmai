@@ -14,27 +14,6 @@ namespace xemmaix::gl
 
 using namespace xemmai;
 
-t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2)
-{
-	t_scoped p = t_tuple::f_instantiate(3);
-	t_tuple& tuple = f_as<t_tuple&>(p);
-	tuple[0].f_construct(std::move(a_0));
-	tuple[1].f_construct(std::move(a_1));
-	tuple[2].f_construct(std::move(a_2));
-	return p;
-}
-
-t_scoped f_tuple(t_scoped&& a_0, t_scoped&& a_1, t_scoped&& a_2, t_scoped&& a_3)
-{
-	t_scoped p = t_tuple::f_instantiate(4);
-	t_tuple& tuple = f_as<t_tuple&>(p);
-	tuple[0].f_construct(std::move(a_0));
-	tuple[1].f_construct(std::move(a_1));
-	tuple[2].f_construct(std::move(a_2));
-	tuple[3].f_construct(std::move(a_3));
-	return p;
-}
-
 std::mutex t_session::v_mutex;
 bool t_session::v_running = false;
 XEMMAI__PORTABLE__THREAD t_session* t_session::v_instance;
@@ -298,7 +277,7 @@ inline t_scoped f_get_booleans(GLenum a_name)
 {
 	GLboolean values[4];
 	glGetBooleanv(a_name, values);
-	return f_tuple(t_scoped(values[0] != GL_FALSE), t_scoped(values[1] != GL_FALSE), t_scoped(values[2] != GL_FALSE), t_scoped(values[3] != GL_FALSE));
+	return f_tuple(values[0] != GL_FALSE, values[1] != GL_FALSE, values[2] != GL_FALSE, values[3] != GL_FALSE);
 }
 
 inline GLint f_get_buffer_parameter(GLenum a_target, GLenum a_name)
@@ -319,7 +298,7 @@ inline t_scoped f_get_floats(GLenum a_name)
 {
 	GLfloat values[4];
 	glGetFloatv(a_name, values);
-	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
+	return f_tuple(values[0], values[1], values[2], values[3]);
 }
 
 inline GLenum f_get_error()
@@ -345,7 +324,7 @@ inline t_scoped f_get_integers(GLenum a_name)
 {
 	GLint values[4];
 	glGetIntegerv(a_name, values);
-	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
+	return f_tuple(values[0], values[1], values[2], values[3]);
 }
 
 inline GLint f_get_renderbuffer_parameter(GLenum a_target, GLenum a_name)
@@ -360,7 +339,7 @@ inline t_scoped f_get_shader_precision_format(GLenum a_shader, GLenum a_precisio
 	GLint range[2];
 	GLint precision;
 	glGetShaderPrecisionFormat(a_shader, a_precision, range, &precision);
-	return f_tuple(t_scoped(range[0]), t_scoped(range[1]), t_scoped(precision));
+	return f_tuple(range[0], range[1], precision);
 }
 
 inline std::wstring f_get_string(GLenum a_name)
@@ -379,7 +358,7 @@ inline t_scoped f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetTexParameterfv(a_target, a_name, values);
-	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
+	return f_tuple(values[0], values[1], values[2], values[3]);
 }
 
 inline GLint f_get_tex_parameteri(GLenum a_target, GLenum a_name)
@@ -393,7 +372,7 @@ inline t_scoped f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetTexParameteriv(a_target, a_name, values);
-	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
+	return f_tuple(values[0], values[1], values[2], values[3]);
 }
 
 inline GLfloat f_get_vertex_attribf(GLenum a_target, GLenum a_name)
@@ -407,7 +386,7 @@ inline t_scoped f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetVertexAttribfv(a_target, a_name, values);
-	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
+	return f_tuple(values[0], values[1], values[2], values[3]);
 }
 
 inline GLint f_get_vertex_attribi(GLenum a_target, GLenum a_name)
@@ -421,7 +400,7 @@ inline t_scoped f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetVertexAttribiv(a_target, a_name, values);
-	return f_tuple(t_scoped(values[0]), t_scoped(values[1]), t_scoped(values[2]), t_scoped(values[3]));
+	return f_tuple(values[0], values[1], values[2], values[3]);
 }
 
 inline GLintptr f_get_vertex_attrib_pointer(GLuint a_index, GLenum a_name)

@@ -64,7 +64,7 @@ public:
 		GLenum type;
 		std::vector<GLchar> name(n);
 		glGetActiveAttrib(f_id(), a_index, n, NULL, &size, &type, &name[0]);
-		return f_tuple(t_scoped(size), t_scoped(type), f_global()->f_as(f_convert(&name[0])));
+		return f_tuple(size, type, f_global()->f_as(f_convert(&name[0])));
 	}
 	t_scoped f_get_active_uniform(GLuint a_index) const
 	{
@@ -73,7 +73,7 @@ public:
 		GLenum type;
 		std::vector<GLchar> name(n);
 		glGetActiveUniform(f_id(), a_index, n, NULL, &size, &type, &name[0]);
-		return f_tuple(t_scoped(size), t_scoped(type), f_global()->f_as(f_convert(&name[0])));
+		return f_tuple(size, type, f_global()->f_as(f_convert(&name[0])));
 	}
 	t_scoped f_get_attached_shaders() const;
 	GLint f_get_attrib_location(const std::wstring& a_name) const
