@@ -29,7 +29,7 @@ void t_type_of<xemmaix::gl::t_uniform_location>::f_define(t_extension* a_extensi
 	;
 }
 
-t_type* t_type_of<xemmaix::gl::t_uniform_location>::f_derive(t_object* a_this)
+t_type* t_type_of<xemmaix::gl::t_uniform_location>::f_derive()
 {
 	return nullptr;
 }
@@ -39,7 +39,7 @@ void t_type_of<xemmaix::gl::t_uniform_location>::f_finalize(t_object* a_this)
 	delete &f_as<xemmaix::gl::t_uniform_location&>(a_this);
 }
 
-void t_type_of<xemmaix::gl::t_uniform_location>::f_instantiate(t_object* a_class, t_stacked* a_stack, size_t a_n)
+void t_type_of<xemmaix::gl::t_uniform_location>::f_instantiate(t_stacked* a_stack, size_t a_n)
 {
 	t_throwable::f_throw(a_stack, a_n, L"uninstantiatable.");
 }

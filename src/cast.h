@@ -35,7 +35,7 @@
 		static bool f_call(T1&& a_object)
 		{
 			auto p = f_object(std::forward<T1>(a_object));
-			return reinterpret_cast<size_t>(p) >= t_value::e_tag__OBJECT && dynamic_cast<t_type_of<typename t_fundamental<T0>::t_type>*>(f_as<t_type*>(p->f_type())) != nullptr;
+			return reinterpret_cast<size_t>(p) >= t_value::e_tag__OBJECT && dynamic_cast<t_type_of<typename t_fundamental<T0>::t_type>*>(p->f_type()) != nullptr;
 		}
 	};
 	template<typename T0>
@@ -53,7 +53,7 @@
 			case t_value::e_tag__FLOAT:
 				return false;
 			default:
-				return dynamic_cast<t_type_of<typename t_fundamental<T0>::t_type>*>(f_as<t_type*>(p->f_type())) != nullptr;
+				return dynamic_cast<t_type_of<typename t_fundamental<T0>::t_type>*>(p->f_type()) != nullptr;
 			}
 		}
 	};

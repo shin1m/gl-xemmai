@@ -79,22 +79,17 @@ public:
 
 class t_extension : public xemmai::t_extension
 {
-	template<typename T, typename T_super> friend class xemmai::t_define;
-
-	t_slot v_type_array_of_int16;
-	t_slot v_type_array_of_int32;
-	t_slot v_type_array_of_float32;
-	t_slot v_type_error;
-	t_slot v_type_buffer;
-	t_slot v_type_framebuffer;
-	t_slot v_type_renderbuffer;
-	t_slot v_type_texture;
-	t_slot v_type_program;
-	t_slot v_type_shader;
-	t_slot v_type_uniform_location;
-
-	template<typename T>
-	void f_type__(t_scoped&& a_type);
+	t_slot_of<t_type> v_type_array_of_int16;
+	t_slot_of<t_type> v_type_array_of_int32;
+	t_slot_of<t_type> v_type_array_of_float32;
+	t_slot_of<t_type> v_type_error;
+	t_slot_of<t_type> v_type_buffer;
+	t_slot_of<t_type> v_type_framebuffer;
+	t_slot_of<t_type> v_type_renderbuffer;
+	t_slot_of<t_type> v_type_texture;
+	t_slot_of<t_type> v_type_program;
+	t_slot_of<t_type> v_type_shader;
+	t_slot_of<t_type> v_type_uniform_location;
 
 public:
 	t_extension(t_object* a_module);
@@ -105,9 +100,14 @@ public:
 		return f_global();
 	}
 	template<typename T>
-	t_object* f_type() const
+	t_slot_of<t_type>& f_type_slot()
 	{
-		return f_global()->f_type<T>();
+		return f_global()->f_type_slot<T>();
+	}
+	template<typename T>
+	t_type* f_type() const
+	{
+		return const_cast<t_extension*>(this)->f_type_slot<T>();
 	}
 	template<typename T>
 	t_scoped f_as(T&& a_value) const
@@ -118,139 +118,73 @@ public:
 };
 
 template<>
-inline void t_extension::f_type__<t_array_of<short> >(t_scoped&& a_type)
-{
-	v_type_array_of_int16 = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_array_of<int> >(t_scoped&& a_type)
-{
-	v_type_array_of_int32 = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_array_of<float> >(t_scoped&& a_type)
-{
-	v_type_array_of_float32 = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_error>(t_scoped&& a_type)
-{
-	v_type_error = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_buffer>(t_scoped&& a_type)
-{
-	v_type_buffer = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_framebuffer>(t_scoped&& a_type)
-{
-	v_type_framebuffer = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_renderbuffer>(t_scoped&& a_type)
-{
-	v_type_renderbuffer = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_texture>(t_scoped&& a_type)
-{
-	v_type_texture = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_program>(t_scoped&& a_type)
-{
-	v_type_program = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_shader>(t_scoped&& a_type)
-{
-	v_type_shader = std::move(a_type);
-}
-
-template<>
-inline void t_extension::f_type__<t_uniform_location>(t_scoped&& a_type)
-{
-	v_type_uniform_location = std::move(a_type);
-}
-
-template<>
 inline const t_extension* t_extension::f_extension<t_extension>() const
 {
 	return this;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_array_of<short> >() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_array_of<short>>()
 {
 	return v_type_array_of_int16;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_array_of<int> >() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_array_of<int>>()
 {
 	return v_type_array_of_int32;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_array_of<float> >() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_array_of<float>>()
 {
 	return v_type_array_of_float32;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_error>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_error>()
 {
 	return v_type_error;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_buffer>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_buffer>()
 {
 	return v_type_buffer;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_framebuffer>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_framebuffer>()
 {
 	return v_type_framebuffer;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_renderbuffer>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_renderbuffer>()
 {
 	return v_type_renderbuffer;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_texture>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_texture>()
 {
 	return v_type_texture;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_program>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_program>()
 {
 	return v_type_program;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_shader>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_shader>()
 {
 	return v_type_shader;
 }
 
 template<>
-inline t_object* t_extension::f_type<t_uniform_location>() const
+inline t_slot_of<t_type>& t_extension::f_type_slot<t_uniform_location>()
 {
 	return v_type_uniform_location;
 }

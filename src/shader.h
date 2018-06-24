@@ -21,7 +21,7 @@ class t_shader
 	}
 
 public:
-	static t_scoped f_construct(t_object* a_class, GLenum a_type)
+	static t_scoped f_construct(t_type* a_class, GLenum a_type)
 	{
 		t_session* session = t_session::f_instance();
 		GLuint id = glCreateShader(a_type);
@@ -87,9 +87,9 @@ struct t_type_of<xemmaix::gl::t_shader> : t_type
 	static void f_define(t_extension* a_extension);
 
 	using t_type::t_type;
-	virtual t_type* f_derive(t_object* a_this);
+	virtual t_type* f_derive();
 	virtual void f_finalize(t_object* a_this);
-	virtual t_scoped f_construct(t_object* a_class, t_stacked* a_stack, size_t a_n);
+	virtual t_scoped f_construct(t_stacked* a_stack, size_t a_n);
 };
 
 }
