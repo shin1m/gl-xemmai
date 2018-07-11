@@ -1,7 +1,5 @@
 #include "shader.h"
 
-#include <cassert>
-
 namespace xemmai
 {
 
@@ -16,17 +14,6 @@ void t_type_of<xemmaix::gl::t_shader>::f_define(t_extension* a_extension)
 		(L"get_source", t_member<std::wstring(t_shader::*)() const, &t_shader::f_get_source>())
 		(L"source", t_member<void(t_shader::*)(const std::wstring&), &t_shader::f_source>())
 	;
-}
-
-t_type* t_type_of<xemmaix::gl::t_shader>::f_derive()
-{
-	return nullptr;
-}
-
-void t_type_of<xemmaix::gl::t_shader>::f_finalize(t_object* a_this)
-{
-	auto p = static_cast<xemmaix::gl::t_shader*>(a_this->f_pointer());
-	assert(!p);
 }
 
 t_scoped t_type_of<xemmaix::gl::t_shader>::f_construct(t_stacked* a_stack, size_t a_n)

@@ -63,16 +63,14 @@ namespace xemmai
 {
 
 template<typename T>
-struct t_type_of<xemmaix::gl::t_array_of<T>> : t_type
+struct t_type_of<xemmaix::gl::t_array_of<T>> : t_underivable<t_holds<xemmaix::gl::t_array_of<T>>>
 {
 	typedef xemmaix::gl::t_extension t_extension;
 
 	static void f_define(t_extension* a_extension, const std::wstring& a_name);
 
-	using t_type::t_type;
-	virtual t_type* f_derive();
+	using t_type_of::t_base::t_base;
 	virtual void f_scan(t_object* a_this, t_scan a_scan);
-	virtual void f_finalize(t_object* a_this);
 	virtual t_scoped f_construct(t_stacked* a_stack, size_t a_n);
 	virtual size_t f_get_at(t_object* a_this, t_stacked* a_stack);
 	virtual size_t f_set_at(t_object* a_this, t_stacked* a_stack);
@@ -89,21 +87,9 @@ void t_type_of<xemmaix::gl::t_array_of<T>>::f_define(t_extension* a_extension, c
 }
 
 template<typename T>
-t_type* t_type_of<xemmaix::gl::t_array_of<T>>::f_derive()
-{
-	return nullptr;
-}
-
-template<typename T>
 void t_type_of<xemmaix::gl::t_array_of<T>>::f_scan(t_object* a_this, t_scan a_scan)
 {
 	a_scan(f_as<xemmaix::gl::t_array_of<T>&>(a_this).v_bytes);
-}
-
-template<typename T>
-void t_type_of<xemmaix::gl::t_array_of<T>>::f_finalize(t_object* a_this)
-{
-	delete &f_as<xemmaix::gl::t_array_of<T>&>(a_this);
 }
 
 template<typename T>

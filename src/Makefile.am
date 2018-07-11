@@ -16,7 +16,6 @@ AM_LDFLAGS += -pg
 endif
 gl_la_LIBADD = $(GL_LIBS) $(XEMMAI_LIBS)
 gl_la_SOURCES = \
-	cast.h \
 	array.h \
 	error.h \
 	error.cc \

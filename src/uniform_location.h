@@ -121,7 +121,7 @@ namespace xemmai
 {
 
 template<>
-struct t_type_of<xemmaix::gl::t_uniform_location> : t_type
+struct t_type_of<xemmaix::gl::t_uniform_location> : t_uninstantiatable<t_underivable<t_holds<xemmaix::gl::t_uniform_location>>>
 {
 	typedef xemmaix::gl::t_extension t_extension;
 
@@ -134,10 +134,7 @@ struct t_type_of<xemmaix::gl::t_uniform_location> : t_type
 	}
 	static void f_define(t_extension* a_extension);
 
-	using t_type::t_type;
-	virtual t_type* f_derive();
-	virtual void f_finalize(t_object* a_this);
-	virtual void f_instantiate(t_stacked* a_stack, size_t a_n);
+	using t_base::t_base;
 };
 
 }
