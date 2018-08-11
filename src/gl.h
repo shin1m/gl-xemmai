@@ -58,11 +58,11 @@ class t_session
 public:
 	static t_session* f_instance()
 	{
-		if (!v_instance) t_throwable::f_throw(L"must be inside main.");
+		if (!v_instance) f_throw(L"must be inside main.");
 #ifdef _WIN32
 		if (!v_glew) {
-			if (glewInit() != GLEW_OK) t_throwable::f_throw(L"glewInit failed.");
-			if (GLEW_VERSION_2_0 == GL_FALSE) t_throwable::f_throw(L"GL 2.0 is required.");
+			if (glewInit() != GLEW_OK) f_throw(L"glewInit failed.");
+			if (GLEW_VERSION_2_0 == GL_FALSE) f_throw(L"GL 2.0 is required.");
 			v_glew = true;
 		}
 #endif
@@ -200,7 +200,7 @@ struct t_holds : t_underivable<t_bears<T>>
 		{
 			xemmaix::gl::t_session::f_instance();
 			auto p = static_cast<T0*>(t_base::f_object(std::forward<T1>(a_object))->f_pointer());
-			if (!p) t_throwable::f_throw(L"already destroyed.");
+			if (!p) f_throw(L"already destroyed.");
 			return p;
 		}
 	};
@@ -255,7 +255,7 @@ struct t_holds : t_underivable<t_bears<T>>
 	typedef t_holds t_base;
 
 	using t_underivable<t_bears<T>>::t_underivable;
-	virtual void f_finalize(t_object* a_this)
+	static void f_do_finalize(t_object* a_this)
 	{
 		assert(a_this->f_pointer() == nullptr);
 	}

@@ -24,7 +24,7 @@ bool t_session::v_glew = false;
 t_session::t_session(t_extension* a_extension) : v_extension(a_extension)
 {
 	std::unique_lock<std::mutex> lock(v_mutex);
-	if (v_running) t_throwable::f_throw(L"main already running.");
+	if (v_running) f_throw(L"main already running.");
 	v_running = true;
 	v_instance = this;
 }

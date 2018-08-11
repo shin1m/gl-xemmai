@@ -16,7 +16,7 @@ void t_type_of<xemmaix::gl::t_shader>::f_define(t_extension* a_extension)
 	;
 }
 
-t_scoped t_type_of<xemmaix::gl::t_shader>::f_construct(t_stacked* a_stack, size_t a_n)
+t_scoped t_type_of<xemmaix::gl::t_shader>::f_do_construct(t_stacked* a_stack, size_t a_n)
 {
 	return t_construct_with<t_scoped(*)(t_type*, GLenum), xemmaix::gl::t_shader::f_construct>::t_bind<xemmaix::gl::t_shader>::f_do(this, a_stack, a_n);
 }
