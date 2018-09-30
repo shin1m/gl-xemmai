@@ -27,7 +27,7 @@ public:
 		t_session* session = t_session::f_instance();
 		GLuint id = glCreateProgram();
 		t_error::f_check();
-		t_scoped object = t_object::f_allocate(a_class);
+		t_scoped object = t_object::f_allocate(a_class, false);
 		object.f_pointer__(new t_program(session->v_programs.insert(std::make_pair(id, static_cast<t_object*>(object))).first));
 		return object;
 	}
@@ -47,7 +47,7 @@ public:
 		glAttachShader(f_id(), a_shader.f_id());
 		t_error::f_check();
 	}
-	void f_bind_attrib_location(GLuint a_index, const std::wstring& a_name)
+	void f_bind_attrib_location(GLuint a_index, std::wstring_view a_name)
 	{
 		glBindAttribLocation(f_id(), a_index, f_convert(a_name).c_str());
 		t_error::f_check();
@@ -76,7 +76,7 @@ public:
 		return f_tuple(size, type, f_global()->f_as(f_convert(&name[0])));
 	}
 	t_scoped f_get_attached_shaders() const;
-	GLint f_get_attrib_location(const std::wstring& a_name) const
+	GLint f_get_attrib_location(std::wstring_view a_name) const
 	{
 		GLint index = glGetAttribLocation(f_id(), f_convert(a_name).c_str());
 		if (index < 0) t_error::f_throw(glGetError());
@@ -97,7 +97,7 @@ public:
 	}
 	t_scoped f_get_uniformfv(const t_uniform_location& a_location) const;
 	t_scoped f_get_uniformiv(const t_uniform_location& a_location) const;
-	t_uniform_location f_get_uniform_location(const std::wstring& a_name) const
+	t_uniform_location f_get_uniform_location(std::wstring_view a_name) const
 	{
 		GLint index = glGetUniformLocation(f_id(), f_convert(a_name).c_str());
 		if (index < 0) t_error::f_throw(glGetError());

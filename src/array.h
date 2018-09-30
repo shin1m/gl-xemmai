@@ -17,7 +17,7 @@ class t_array_of
 
 	void f_check(size_t a_index) const
 	{
-		if (a_index >= v_size) f_throw(L"out of range.");
+		if (a_index >= v_size) f_throw(L"out of range."sv);
 	}
 
 public:
@@ -28,17 +28,17 @@ public:
 	}
 	t_array_of(t_scoped&& a_bytes, size_t a_offset) : v_bytes(std::move(a_bytes))
 	{
-		if (a_offset % sizeof(T) > 0) f_throw(L"offset must be multiple of element size.");
+		if (a_offset % sizeof(T) > 0) f_throw(L"offset must be multiple of element size."sv);
 		t_bytes& bytes = f_as<t_bytes&>(v_bytes);
-		if (a_offset > bytes.f_size()) f_throw(L"out of range.");
+		if (a_offset > bytes.f_size()) f_throw(L"out of range."sv);
 		v_size = (bytes.f_size() - a_offset) / sizeof(T);
 		v_values = reinterpret_cast<T*>(&bytes[0] + a_offset);
 	}
 	t_array_of(t_scoped&& a_bytes, size_t a_offset, size_t a_size) : v_bytes(std::move(a_bytes)), v_size(a_size)
 	{
-		if (a_offset % sizeof(T) > 0) f_throw(L"offset must be multiple of element size.");
+		if (a_offset % sizeof(T) > 0) f_throw(L"offset must be multiple of element size."sv);
 		t_bytes& bytes = f_as<t_bytes&>(v_bytes);
-		if (a_offset + v_size * sizeof(T) > bytes.f_size()) f_throw(L"out of range.");
+		if (a_offset + v_size * sizeof(T) > bytes.f_size()) f_throw(L"out of range."sv);
 		v_values = reinterpret_cast<T*>(&bytes[0] + a_offset);
 	}
 	size_t f_size() const
@@ -67,7 +67,7 @@ struct t_type_of<xemmaix::gl::t_array_of<T>> : t_underivable<t_holds<xemmaix::gl
 {
 	typedef xemmaix::gl::t_extension t_extension;
 
-	static void f_define(t_extension* a_extension, const std::wstring& a_name);
+	static void f_define(t_extension* a_extension, std::wstring_view a_name);
 
 	using t_type_of::t_base::t_base;
 	static void f_do_scan(t_object* a_this, t_scan a_scan);
@@ -77,12 +77,12 @@ struct t_type_of<xemmaix::gl::t_array_of<T>> : t_underivable<t_holds<xemmaix::gl
 };
 
 template<typename T>
-void t_type_of<xemmaix::gl::t_array_of<T>>::f_define(t_extension* a_extension, const std::wstring& a_name)
+void t_type_of<xemmaix::gl::t_array_of<T>>::f_define(t_extension* a_extension, std::wstring_view a_name)
 {
 	using namespace xemmaix::gl;
 	t_define<t_array_of<T>, t_object>(a_extension, a_name)
-		(L"BYTES_PER_ELEMENT", sizeof(T))
-		(L"size", t_member<size_t(t_array_of<T>::*)() const, &t_array_of<T>::f_size>())
+		(L"BYTES_PER_ELEMENT"sv, sizeof(T))
+		(L"size"sv, t_member<size_t(t_array_of<T>::*)() const, &t_array_of<T>::f_size>())
 	;
 }
 
@@ -96,9 +96,9 @@ template<typename T>
 t_scoped t_type_of<xemmaix::gl::t_array_of<T>>::f_do_construct(t_stacked* a_stack, size_t a_n)
 {
 	return t_overload<
-		t_construct<t_scoped&&>,
-		t_construct<t_scoped&&, size_t>,
-		t_construct<t_scoped&&, size_t, size_t>
+		t_construct<false, t_scoped&&>,
+		t_construct<false, t_scoped&&, size_t>,
+		t_construct<false, t_scoped&&, size_t, size_t>
 	>::t_bind<xemmaix::gl::t_array_of<T>>::f_do(this, a_stack, a_n);
 }
 

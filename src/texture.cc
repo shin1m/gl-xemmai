@@ -6,8 +6,8 @@ namespace xemmai
 void t_type_of<xemmaix::gl::t_texture>::f_define(t_extension* a_extension)
 {
 	using namespace xemmaix::gl;
-	t_define<t_texture, t_object>(a_extension, L"Texture")
-		(L"delete", t_member<void(t_texture::*)(), &t_texture::f_delete>())
+	t_define<t_texture, t_object>(a_extension, L"Texture"sv)
+		(L"delete"sv, t_member<void(t_texture::*)(), &t_texture::f_delete>())
 	;
 }
 

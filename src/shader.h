@@ -26,7 +26,7 @@ public:
 		t_session* session = t_session::f_instance();
 		GLuint id = glCreateShader(a_type);
 		t_error::f_check();
-		t_scoped object = t_object::f_allocate(a_class);
+		t_scoped object = t_object::f_allocate(a_class, false);
 		object.f_pointer__(new t_shader(session->v_shaders.insert(std::make_pair(id, static_cast<t_object*>(object))).first));
 		return object;
 	}
@@ -65,7 +65,7 @@ public:
 		glGetShaderSource(f_id(), n, NULL, &log[0]);
 		return f_convert(&log[0]);
 	}
-	void f_source(const std::wstring& a_source)
+	void f_source(std::wstring_view a_source)
 	{
 		std::string s = f_convert(a_source);
 		const GLchar* p = s.c_str();

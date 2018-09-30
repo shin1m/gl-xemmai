@@ -27,7 +27,7 @@ public:
 		GLuint id;
 		glGenTextures(1, &id);
 		t_error::f_check();
-		t_scoped object = t_object::f_allocate(a_class);
+		t_scoped object = t_object::f_allocate(a_class, false);
 		object.f_pointer__(new t_texture(session->v_textures.insert(std::make_pair(id, static_cast<t_object*>(object))).first));
 		return object;
 	}

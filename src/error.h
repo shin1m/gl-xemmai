@@ -18,7 +18,7 @@ public:
 		if (error != GL_NO_ERROR) f_throw(error);
 	}
 
-	t_error(const std::wstring& a_message, GLenum a_error) : t_throwable(a_message), v_error(a_error)
+	t_error(std::wstring_view a_message, GLenum a_error) : t_throwable(a_message), v_error(a_error)
 	{
 	}
 	GLenum f_error() const
