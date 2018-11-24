@@ -5,10 +5,7 @@ namespace xemmaix::gl
 
 void t_error::f_throw(GLenum a_error)
 {
-	t_session* session = t_session::f_instance();
-	t_scoped object = t_object::f_allocate(session->v_extension->f_type<t_error>(), false);
-	object.f_pointer__(new t_error(L"error"sv, a_error));
-	throw object;
+	throw f_new<t_error>(t_session::f_instance()->v_extension, false, L"error"sv, a_error);
 }
 
 }

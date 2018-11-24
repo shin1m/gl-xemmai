@@ -31,12 +31,12 @@ t_session::t_session(t_extension* a_extension) : v_extension(a_extension)
 
 t_session::~t_session()
 {
-	while (!v_buffers.empty()) f_as<t_buffer&>(v_buffers.begin()->second).f_delete();
-	while (!v_framebuffers.empty()) f_as<t_framebuffer&>(v_framebuffers.begin()->second).f_delete();
-	while (!v_renderbuffers.empty()) f_as<t_renderbuffer&>(v_renderbuffers.begin()->second).f_delete();
-	while (!v_textures.empty()) f_as<t_texture&>(v_textures.begin()->second).f_delete();
-	while (!v_programs.empty()) f_as<t_program&>(v_programs.begin()->second).f_delete();
-	while (!v_shaders.empty()) f_as<t_shader&>(v_shaders.begin()->second).f_delete();
+	while (!v_buffers.empty()) v_buffers.begin()->second->f_as<t_buffer>().f_delete();
+	while (!v_framebuffers.empty()) v_framebuffers.begin()->second->f_as<t_framebuffer>().f_delete();
+	while (!v_renderbuffers.empty()) v_renderbuffers.begin()->second->f_as<t_renderbuffer>().f_delete();
+	while (!v_textures.empty()) v_textures.begin()->second->f_as<t_texture>().f_delete();
+	while (!v_programs.empty()) v_programs.begin()->second->f_as<t_program>().f_delete();
+	while (!v_shaders.empty()) v_shaders.begin()->second->f_as<t_shader>().f_delete();
 	std::unique_lock<std::mutex> lock(v_mutex);
 	v_running = false;
 	v_instance = nullptr;

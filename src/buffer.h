@@ -8,28 +8,24 @@ namespace xemmaix::gl
 
 class t_buffer
 {
+	friend class t_type_of<t_object>;
+	friend class t_holds<t_buffer>;
+
 	std::map<GLuint, t_scoped>::iterator v_entry;
 
-	t_buffer(std::map<GLuint, t_scoped>::iterator a_entry) : v_entry(a_entry)
+	t_buffer(t_session* a_session, GLuint a_id) : v_entry(a_session->v_buffers.emplace(a_id, t_object::f_of(this)).first)
 	{
 	}
-	~t_buffer()
-	{
-		v_entry->second.f_pointer__(nullptr);
-		t_session* session = t_session::f_instance();
-		session->v_buffers.erase(v_entry);
-	}
+	~t_buffer() = default;
 
 public:
 	static t_scoped f_construct(t_type* a_class)
 	{
-		t_session* session = t_session::f_instance();
+		auto session = t_session::f_instance();
 		GLuint id;
 		glGenBuffers(1, &id);
 		t_error::f_check();
-		t_scoped object = t_object::f_allocate(a_class, false);
-		object.f_pointer__(new t_buffer(session->v_buffers.insert(std::make_pair(id, static_cast<t_object*>(object))).first));
-		return object;
+		return a_class->f_new<t_buffer>(false, session, id);
 	}
 
 	GLuint f_id() const
@@ -40,7 +36,8 @@ public:
 	{
 		glDeleteBuffers(1, &v_entry->first);
 		t_error::f_check();
-		delete this;
+		t_session::f_instance()->v_buffers.erase(v_entry);
+		v_entry = {};
 	}
 };
 

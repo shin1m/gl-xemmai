@@ -5,28 +5,28 @@ namespace xemmaix::gl
 
 t_scoped t_program::f_get_attached_shaders() const
 {
-	t_session* session = t_session::f_instance();
+	auto session = t_session::f_instance();
 	GLint n = f_get_parameteri(GL_ATTACHED_SHADERS);
 	std::vector<GLuint> shaders(n);
 	glGetAttachedShaders(f_id(), n, NULL, &shaders[0]);
-	t_scoped p = t_tuple::f_instantiate(n);
-	t_tuple& tuple = f_as<t_tuple&>(p);
+	auto p = t_tuple::f_instantiate(n);
+	auto& tuple = f_as<t_tuple&>(p);
 	for (GLint i = 0; i < n; ++i) tuple[i].f_construct(session->v_shaders.find(shaders[i])->second);
 	return p;
 }
 
 t_scoped t_program::f_get_uniformfv(const t_uniform_location& a_location) const
 {
-	t_scoped p = t_bytes::f_instantiate(sizeof(GLfloat) * 16);
-	t_bytes& bytes = f_as<t_bytes&>(p);
+	auto p = t_bytes::f_instantiate(sizeof(GLfloat) * 16);
+	auto& bytes = f_as<t_bytes&>(p);
 	glGetUniformfv(f_id(), a_location.f_id(), reinterpret_cast<GLfloat*>(&bytes[0]));
 	return p;
 }
 
 t_scoped t_program::f_get_uniformiv(const t_uniform_location& a_location) const
 {
-	t_scoped p = t_bytes::f_instantiate(sizeof(GLint) * 16);
-	t_bytes& bytes = f_as<t_bytes&>(p);
+	auto p = t_bytes::f_instantiate(sizeof(GLint) * 16);
+	auto& bytes = f_as<t_bytes&>(p);
 	glGetUniformiv(f_id(), a_location.f_id(), reinterpret_cast<GLint*>(&bytes[0]));
 	return p;
 }

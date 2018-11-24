@@ -196,11 +196,11 @@ struct t_holds : t_underivable<t_bears<T>>
 	struct t_cast
 	{
 		template<typename T1>
-		static T0* f_call(T1&& a_object)
+		static T0& f_call(T1&& a_object)
 		{
 			xemmaix::gl::t_session::f_instance();
-			auto p = static_cast<T0*>(t_base::f_object(std::forward<T1>(a_object))->f_pointer());
-			if (!p) f_throw(L"already destroyed."sv);
+			auto& p = t_base::f_object(std::forward<T1>(a_object))->template f_as<T0>();
+			if (p.v_entry == decltype(p.v_entry){}) f_throw(L"already destroyed."sv);
 			return p;
 		}
 	};
@@ -210,7 +210,7 @@ struct t_holds : t_underivable<t_bears<T>>
 		template<typename T1>
 		static T0 f_call(T1&& a_object)
 		{
-			return *t_cast<typename t_fundamental<T0>::t_type>::f_call(std::forward<T1>(a_object));
+			return t_cast<typename t_fundamental<T0>::t_type>::f_call(std::forward<T1>(a_object));
 		}
 	};
 	template<typename T0>
@@ -219,7 +219,7 @@ struct t_holds : t_underivable<t_bears<T>>
 		template<typename T1>
 		static T0* f_call(T1&& a_object)
 		{
-			return reinterpret_cast<size_t>(t_base::f_object(std::forward<T1>(a_object))) == t_value::e_tag__NULL ? nullptr : t_cast<T0>::f_call(std::forward<T1>(a_object));
+			return reinterpret_cast<size_t>(t_base::f_object(std::forward<T1>(a_object))) == t_value::e_tag__NULL ? nullptr : &t_cast<T0>::f_call(std::forward<T1>(a_object));
 		}
 	};
 	template<typename T0>
@@ -257,7 +257,9 @@ struct t_holds : t_underivable<t_bears<T>>
 	using t_underivable<t_bears<T>>::t_underivable;
 	static void f_do_finalize(t_object* a_this)
 	{
-		assert(a_this->f_pointer() == nullptr);
+		auto& p = a_this->f_as<T>();
+		assert(p.v_entry == decltype(p.v_entry){});
+		p.~T();
 	}
 };
 
