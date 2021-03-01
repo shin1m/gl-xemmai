@@ -11,7 +11,7 @@ class t_shader
 	friend class t_type_of<t_object>;
 	friend class t_holds<t_shader>;
 
-	std::map<GLuint, t_scoped>::iterator v_entry;
+	std::map<GLuint, t_root>::iterator v_entry;
 
 	t_shader(t_session* a_session, GLuint a_id) : v_entry(a_session->v_shaders.emplace(a_id, t_object::f_of(this)).first)
 	{
@@ -19,7 +19,7 @@ class t_shader
 	~t_shader() = default;
 
 public:
-	static t_scoped f_construct(t_type* a_class, GLenum a_type)
+	static t_pvalue f_construct(t_type* a_class, GLenum a_type)
 	{
 		auto session = t_session::f_instance();
 		GLuint id = glCreateShader(a_type);
@@ -81,7 +81,7 @@ struct t_type_of<xemmaix::gl::t_shader> : xemmaix::gl::t_holds<xemmaix::gl::t_sh
 	static void f_define(t_extension* a_extension);
 
 	using t_base::t_base;
-	t_scoped f_do_construct(t_stacked* a_stack, size_t a_n);
+	t_pvalue f_do_construct(t_pvalue* a_stack, size_t a_n);
 };
 
 }

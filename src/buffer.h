@@ -11,7 +11,7 @@ class t_buffer
 	friend class t_type_of<t_object>;
 	friend class t_holds<t_buffer>;
 
-	std::map<GLuint, t_scoped>::iterator v_entry;
+	std::map<GLuint, t_root>::iterator v_entry;
 
 	t_buffer(t_session* a_session, GLuint a_id) : v_entry(a_session->v_buffers.emplace(a_id, t_object::f_of(this)).first)
 	{
@@ -19,7 +19,7 @@ class t_buffer
 	~t_buffer() = default;
 
 public:
-	static t_scoped f_construct(t_type* a_class)
+	static t_pvalue f_construct(t_type* a_class)
 	{
 		auto session = t_session::f_instance();
 		GLuint id;
@@ -52,7 +52,7 @@ struct t_type_of<xemmaix::gl::t_buffer> : xemmaix::gl::t_holds<xemmaix::gl::t_bu
 	static void f_define(t_extension* a_extension);
 
 	using t_base::t_base;
-	t_scoped f_do_construct(t_stacked* a_stack, size_t a_n);
+	t_pvalue f_do_construct(t_pvalue* a_stack, size_t a_n);
 };
 
 }

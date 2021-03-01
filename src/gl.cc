@@ -23,7 +23,7 @@ bool t_session::v_glew = false;
 
 t_session::t_session(t_extension* a_extension) : v_extension(a_extension)
 {
-	std::unique_lock<std::mutex> lock(v_mutex);
+	std::unique_lock lock(v_mutex);
 	if (v_running) f_throw(L"main already running."sv);
 	v_running = true;
 	v_instance = this;
@@ -37,7 +37,7 @@ t_session::~t_session()
 	while (!v_textures.empty()) v_textures.begin()->second->f_as<t_texture>().f_delete();
 	while (!v_programs.empty()) v_programs.begin()->second->f_as<t_program>().f_delete();
 	while (!v_shaders.empty()) v_shaders.begin()->second->f_as<t_shader>().f_delete();
-	std::unique_lock<std::mutex> lock(v_mutex);
+	std::unique_lock lock(v_mutex);
 	v_running = false;
 	v_instance = nullptr;
 }
@@ -45,7 +45,7 @@ t_session::~t_session()
 namespace
 {
 
-inline void f_main(t_extension* a_extension, const t_value& a_callable)
+inline void f_main(t_extension* a_extension, const t_pvalue& a_callable)
 {
 	t_session session(a_extension);
 	a_callable();
@@ -273,7 +273,7 @@ inline bool f_get_boolean(GLenum a_name)
 	return values[0] != GL_FALSE;
 }
 
-inline t_scoped f_get_booleans(GLenum a_name)
+inline t_pvalue f_get_booleans(GLenum a_name)
 {
 	GLboolean values[4];
 	glGetBooleanv(a_name, values);
@@ -294,7 +294,7 @@ inline GLfloat f_get_float(GLenum a_name)
 	return values[0];
 }
 
-inline t_scoped f_get_floats(GLenum a_name)
+inline t_pvalue f_get_floats(GLenum a_name)
 {
 	GLfloat values[4];
 	glGetFloatv(a_name, values);
@@ -320,7 +320,7 @@ inline GLint f_get_integer(GLenum a_name)
 	return values[0];
 }
 
-inline t_scoped f_get_integers(GLenum a_name)
+inline t_pvalue f_get_integers(GLenum a_name)
 {
 	GLint values[4];
 	glGetIntegerv(a_name, values);
@@ -334,7 +334,7 @@ inline GLint f_get_renderbuffer_parameter(GLenum a_target, GLenum a_name)
 	return value;
 }
 
-inline t_scoped f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
+inline t_pvalue f_get_shader_precision_format(GLenum a_shader, GLenum a_precision)
 {
 	GLint range[2];
 	GLint precision;
@@ -354,7 +354,7 @@ inline GLfloat f_get_tex_parameterf(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_scoped f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
+inline t_pvalue f_get_tex_parameterfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetTexParameterfv(a_target, a_name, values);
@@ -368,7 +368,7 @@ inline GLint f_get_tex_parameteri(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_scoped f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
+inline t_pvalue f_get_tex_parameteriv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetTexParameteriv(a_target, a_name, values);
@@ -382,7 +382,7 @@ inline GLfloat f_get_vertex_attribf(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_scoped f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
+inline t_pvalue f_get_vertex_attribfv(GLenum a_target, GLenum a_name)
 {
 	GLfloat values[4];
 	glGetVertexAttribfv(a_target, a_name, values);
@@ -396,7 +396,7 @@ inline GLint f_get_vertex_attribi(GLenum a_target, GLenum a_name)
 	return values[0];
 }
 
-inline t_scoped f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
+inline t_pvalue f_get_vertex_attribiv(GLenum a_target, GLenum a_name)
 {
 	GLint values[4];
 	glGetVertexAttribiv(a_target, a_name, values);
@@ -662,93 +662,93 @@ t_extension::t_extension(t_object* a_module) : xemmai::t_extension(a_module)
 	t_type_of<t_program>::f_define(this);
 	t_type_of<t_shader>::f_define(this);
 	t_type_of<t_uniform_location>::f_define(this);
-	f_define<void (*)(t_extension*, const t_value&), f_main>(this, L"main"sv);
-	f_define<void (*)(GLenum), f_active_texture>(this, L"active_texture"sv);
-	f_define<void (*)(GLenum, const t_buffer*), f_bind_buffer>(this, L"bind_buffer"sv);
-	f_define<void (*)(GLenum, const t_framebuffer*), f_bind_framebuffer>(this, L"bind_framebuffer"sv);
-	f_define<void (*)(GLenum, const t_renderbuffer*), f_bind_renderbuffer>(this, L"bind_renderbuffer"sv);
-	f_define<void (*)(GLenum, const t_texture*), f_bind_texture>(this, L"bind_texture"sv);
-	f_define<void (*)(GLclampf, GLclampf, GLclampf, GLclampf), f_blend_color>(this, L"blend_color"sv);
-	f_define<void (*)(GLenum), f_blend_equation>(this, L"blend_equation"sv);
-	f_define<void (*)(GLenum, GLenum), f_blend_equation_separate>(this, L"blend_equation_separate"sv);
-	f_define<void (*)(GLenum, GLenum), f_blend_func>(this, L"blend_func"sv);
-	f_define<void (*)(GLenum, GLenum, GLenum, GLenum), f_blend_func_separate>(this, L"blend_func_separate"sv);
-	f_define<void (*)(GLenum, const t_bytes&, GLenum), f_buffer_data>(this, L"buffer_data"sv);
-	f_define<void (*)(GLenum, GLintptr, const t_bytes&), f_buffer_sub_data>(this, L"buffer_sub_data"sv);
-	f_define<GLenum (*)(GLenum), f_check_framebuffer_status>(this, L"check_framebuffer_status"sv);
-	f_define<void (*)(GLbitfield), f_clear>(this, L"clear"sv);
-	f_define<void (*)(GLclampf, GLclampf, GLclampf, GLclampf), f_clear_color>(this, L"clear_color"sv);
-	f_define<void (*)(GLclampf), f_clear_depthf>(this, L"clear_depthf"sv);
-	f_define<void (*)(GLint), f_clear_stencil>(this, L"clear_stencil"sv);
-	f_define<void (*)(bool, bool, bool, bool), f_color_mask>(this, L"color_mask"sv);
-	f_define<void (*)(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint), f_copy_tex_image2d>(this, L"copy_tex_image2d"sv);
-	f_define<void (*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei), f_copy_tex_sub_image2d>(this, L"copy_tex_sub_image2d"sv);
-	f_define<void (*)(GLenum), f_cull_face>(this, L"cull_face"sv);
-	f_define<void (*)(GLenum), f_depth_func>(this, L"depth_func"sv);
-	f_define<void (*)(bool), f_depth_mask>(this, L"depth_mask"sv);
-	f_define<void (*)(GLclampf, GLclampf), f_depth_rangef>(this, L"depth_rangef"sv);
-	f_define<void (*)(GLenum), f_disable>(this, L"disable"sv);
-	f_define<void (*)(GLuint), f_disable_vertex_attrib_array>(this, L"disable_vertex_attrib_array"sv);
-	f_define<void (*)(GLenum, GLint, GLsizei), f_draw_arrays>(this, L"draw_arrays"sv);
-	f_define<void (*)(GLenum, GLsizei, GLenum, GLintptr), f_draw_elements>(this, L"draw_elements"sv);
-	f_define<void (*)(GLenum), f_enable>(this, L"enable"sv);
-	f_define<void (*)(GLuint), f_enable_vertex_attrib_array>(this, L"enable_vertex_attrib_array"sv);
-	f_define<void (*)(), f_finish>(this, L"finish"sv);
-	f_define<void (*)(), f_flush>(this, L"flush"sv);
-	f_define<void (*)(GLenum, GLenum, GLenum, const t_renderbuffer*), f_framebuffer_renderbuffer>(this, L"framebuffer_renderbuffer"sv);
-	f_define<void (*)(GLenum, GLenum, GLenum, const t_texture*, GLint), f_framebuffer_texture2d>(this, L"framebuffer_texture2d"sv);
-	f_define<void (*)(GLenum), f_front_face>(this, L"front_face"sv);
-	f_define<void (*)(GLenum), f_generate_mipmap>(this, L"generate_mipmap"sv);
-	f_define<bool (*)(GLenum), f_get_boolean>(this, L"get_boolean"sv);
-	f_define<t_scoped (*)(GLenum), f_get_booleans>(this, L"get_booleans"sv);
-	f_define<GLint (*)(GLenum, GLenum), f_get_buffer_parameter>(this, L"get_buffer_parameter"sv);
-	f_define<GLfloat (*)(GLenum), f_get_float>(this, L"get_float"sv);
-	f_define<t_scoped (*)(GLenum), f_get_floats>(this, L"get_floats"sv);
-	f_define<GLenum (*)(), f_get_error>(this, L"get_error"sv);
-	f_define<GLint (*)(GLenum, GLenum, GLenum), f_get_framebuffer_attachment_parameter>(this, L"get_framebuffer_attachment_parameter"sv);
-	f_define<GLint (*)(GLenum), f_get_integer>(this, L"get_integer"sv);
-	f_define<t_scoped (*)(GLenum), f_get_integers>(this, L"get_integers"sv);
-	f_define<GLint (*)(GLenum, GLenum), f_get_renderbuffer_parameter>(this, L"get_renderbuffer_parameter"sv);
-	f_define<t_scoped (*)(GLenum, GLenum), f_get_shader_precision_format>(this, L"get_shader_precision_format"sv);
-	f_define<std::wstring (*)(GLenum), f_get_string>(this, L"get_string"sv);
-	f_define<GLfloat (*)(GLenum, GLenum), f_get_tex_parameterf>(this, L"get_tex_parameterf"sv);
-	f_define<t_scoped (*)(GLenum, GLenum), f_get_tex_parameterfv>(this, L"get_tex_parameterfv"sv);
-	f_define<GLint (*)(GLenum, GLenum), f_get_tex_parameteri>(this, L"get_tex_parameteri"sv);
-	f_define<t_scoped (*)(GLenum, GLenum), f_get_tex_parameteriv>(this, L"get_tex_parameteriv"sv);
-	f_define<GLfloat (*)(GLuint, GLenum), f_get_vertex_attribf>(this, L"get_vertex_attribf"sv);
-	f_define<t_scoped (*)(GLuint, GLenum), f_get_vertex_attribfv>(this, L"get_vertex_attribfv"sv);
-	f_define<GLint (*)(GLuint, GLenum), f_get_vertex_attribi>(this, L"get_vertex_attribi"sv);
-	f_define<t_scoped (*)(GLuint, GLenum), f_get_vertex_attribiv>(this, L"get_vertex_attribiv"sv);
-	f_define<GLintptr (*)(GLuint, GLenum), f_get_vertex_attrib_pointer>(this, L"get_vertex_attrib_pointer"sv);
-	f_define<void (*)(GLenum, GLenum), f_hint>(this, L"hint"sv);
-	f_define<bool (*)(GLenum), f_is_enabled>(this, L"is_enabled"sv);
-	f_define<void (*)(GLfloat), f_line_width>(this, L"line_width"sv);
-	f_define<void (*)(GLenum, GLint), f_pixel_storei>(this, L"pixel_storei"sv);
-	f_define<void (*)(GLfloat, GLfloat), f_polygon_offset>(this, L"polygon_offset"sv);
-	f_define<void (*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, t_bytes&), f_read_pixels>(this, L"read_pixels"sv);
-	f_define<void (*)(), f_release_shader_compiler>(this, L"release_shader_compiler"sv);
-	f_define<void (*)(GLenum, GLenum, GLsizei, GLsizei), f_renderbuffer_storage>(this, L"renderbuffer_storage"sv);
-	f_define<void (*)(GLclampf, bool), f_sample_coverage>(this, L"sample_coverage"sv);
-	f_define<void (*)(GLint, GLint, GLsizei, GLsizei), f_scissor>(this, L"scissor"sv);
-	f_define<void (*)(GLenum, GLint, GLuint), f_stencil_func>(this, L"stencil_func"sv);
-	f_define<void (*)(GLenum, GLenum, GLint, GLuint), f_stencil_func_separate>(this, L"stencil_func_separate"sv);
-	f_define<void (*)(GLuint), f_stencil_mask>(this, L"stencil_mask"sv);
-	f_define<void (*)(GLenum, GLuint), f_stencil_mask_separate>(this, L"stencil_mask_separate"sv);
-	f_define<void (*)(GLenum, GLenum, GLenum), f_stencil_op>(this, L"stencil_op"sv);
-	f_define<void (*)(GLenum, GLenum, GLenum, GLenum), f_stencil_op_separate>(this, L"stencil_op_separate"sv);
-	f_define<void (*)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const t_bytes&), f_tex_image2d>(this, L"tex_image2d"sv);
-	f_define<void (*)(GLenum, GLenum, GLfloat), f_tex_parameterf>(this, L"tex_parameterf"sv);
-	f_define<void (*)(GLenum, GLenum, GLfloat, GLfloat, GLfloat, GLfloat), f_tex_parameter4f>(this, L"tex_parameter4f"sv);
-	f_define<void (*)(GLenum, GLenum, GLint), f_tex_parameteri>(this, L"tex_parameteri"sv);
-	f_define<void (*)(GLenum, GLenum, GLint, GLint, GLint, GLint), f_tex_parameter4i>(this, L"tex_parameter4i"sv);
-	f_define<void (*)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const t_bytes&), f_tex_sub_image2d>(this, L"tex_sub_image2d"sv);
-	f_define<void (*)(const t_program*), f_use_program>(this, L"use_program"sv);
-	f_define<void (*)(GLuint, GLfloat), f_vertex_attrib1f>(this, L"vertex_attrib1f"sv);
-	f_define<void (*)(GLuint, GLfloat, GLfloat), f_vertex_attrib2f>(this, L"vertex_attrib2f"sv);
-	f_define<void (*)(GLuint, GLfloat, GLfloat, GLfloat), f_vertex_attrib3f>(this, L"vertex_attrib3f"sv);
-	f_define<void (*)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat), f_vertex_attrib4f>(this, L"vertex_attrib4f"sv);
-	f_define<void (*)(GLuint, GLint, GLenum, bool, GLsizei, GLintptr), f_vertex_attrib_pointer>(this, L"vertex_attrib_pointer"sv);
-	f_define<void (*)(GLint, GLint, GLsizei, GLsizei), f_viewport>(this, L"viewport"sv);
+	f_define<void(*)(t_extension*, const t_pvalue&), f_main>(this, L"main"sv);
+	f_define<void(*)(GLenum), f_active_texture>(this, L"active_texture"sv);
+	f_define<void(*)(GLenum, const t_buffer*), f_bind_buffer>(this, L"bind_buffer"sv);
+	f_define<void(*)(GLenum, const t_framebuffer*), f_bind_framebuffer>(this, L"bind_framebuffer"sv);
+	f_define<void(*)(GLenum, const t_renderbuffer*), f_bind_renderbuffer>(this, L"bind_renderbuffer"sv);
+	f_define<void(*)(GLenum, const t_texture*), f_bind_texture>(this, L"bind_texture"sv);
+	f_define<void(*)(GLclampf, GLclampf, GLclampf, GLclampf), f_blend_color>(this, L"blend_color"sv);
+	f_define<void(*)(GLenum), f_blend_equation>(this, L"blend_equation"sv);
+	f_define<void(*)(GLenum, GLenum), f_blend_equation_separate>(this, L"blend_equation_separate"sv);
+	f_define<void(*)(GLenum, GLenum), f_blend_func>(this, L"blend_func"sv);
+	f_define<void(*)(GLenum, GLenum, GLenum, GLenum), f_blend_func_separate>(this, L"blend_func_separate"sv);
+	f_define<void(*)(GLenum, const t_bytes&, GLenum), f_buffer_data>(this, L"buffer_data"sv);
+	f_define<void(*)(GLenum, GLintptr, const t_bytes&), f_buffer_sub_data>(this, L"buffer_sub_data"sv);
+	f_define<GLenum(*)(GLenum), f_check_framebuffer_status>(this, L"check_framebuffer_status"sv);
+	f_define<void(*)(GLbitfield), f_clear>(this, L"clear"sv);
+	f_define<void(*)(GLclampf, GLclampf, GLclampf, GLclampf), f_clear_color>(this, L"clear_color"sv);
+	f_define<void(*)(GLclampf), f_clear_depthf>(this, L"clear_depthf"sv);
+	f_define<void(*)(GLint), f_clear_stencil>(this, L"clear_stencil"sv);
+	f_define<void(*)(bool, bool, bool, bool), f_color_mask>(this, L"color_mask"sv);
+	f_define<void(*)(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint), f_copy_tex_image2d>(this, L"copy_tex_image2d"sv);
+	f_define<void(*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei), f_copy_tex_sub_image2d>(this, L"copy_tex_sub_image2d"sv);
+	f_define<void(*)(GLenum), f_cull_face>(this, L"cull_face"sv);
+	f_define<void(*)(GLenum), f_depth_func>(this, L"depth_func"sv);
+	f_define<void(*)(bool), f_depth_mask>(this, L"depth_mask"sv);
+	f_define<void(*)(GLclampf, GLclampf), f_depth_rangef>(this, L"depth_rangef"sv);
+	f_define<void(*)(GLenum), f_disable>(this, L"disable"sv);
+	f_define<void(*)(GLuint), f_disable_vertex_attrib_array>(this, L"disable_vertex_attrib_array"sv);
+	f_define<void(*)(GLenum, GLint, GLsizei), f_draw_arrays>(this, L"draw_arrays"sv);
+	f_define<void(*)(GLenum, GLsizei, GLenum, GLintptr), f_draw_elements>(this, L"draw_elements"sv);
+	f_define<void(*)(GLenum), f_enable>(this, L"enable"sv);
+	f_define<void(*)(GLuint), f_enable_vertex_attrib_array>(this, L"enable_vertex_attrib_array"sv);
+	f_define<void(*)(), f_finish>(this, L"finish"sv);
+	f_define<void(*)(), f_flush>(this, L"flush"sv);
+	f_define<void(*)(GLenum, GLenum, GLenum, const t_renderbuffer*), f_framebuffer_renderbuffer>(this, L"framebuffer_renderbuffer"sv);
+	f_define<void(*)(GLenum, GLenum, GLenum, const t_texture*, GLint), f_framebuffer_texture2d>(this, L"framebuffer_texture2d"sv);
+	f_define<void(*)(GLenum), f_front_face>(this, L"front_face"sv);
+	f_define<void(*)(GLenum), f_generate_mipmap>(this, L"generate_mipmap"sv);
+	f_define<bool(*)(GLenum), f_get_boolean>(this, L"get_boolean"sv);
+	f_define<t_pvalue(*)(GLenum), f_get_booleans>(this, L"get_booleans"sv);
+	f_define<GLint(*)(GLenum, GLenum), f_get_buffer_parameter>(this, L"get_buffer_parameter"sv);
+	f_define<GLfloat(*)(GLenum), f_get_float>(this, L"get_float"sv);
+	f_define<t_pvalue(*)(GLenum), f_get_floats>(this, L"get_floats"sv);
+	f_define<GLenum(*)(), f_get_error>(this, L"get_error"sv);
+	f_define<GLint(*)(GLenum, GLenum, GLenum), f_get_framebuffer_attachment_parameter>(this, L"get_framebuffer_attachment_parameter"sv);
+	f_define<GLint(*)(GLenum), f_get_integer>(this, L"get_integer"sv);
+	f_define<t_pvalue(*)(GLenum), f_get_integers>(this, L"get_integers"sv);
+	f_define<GLint(*)(GLenum, GLenum), f_get_renderbuffer_parameter>(this, L"get_renderbuffer_parameter"sv);
+	f_define<t_pvalue(*)(GLenum, GLenum), f_get_shader_precision_format>(this, L"get_shader_precision_format"sv);
+	f_define<std::wstring(*)(GLenum), f_get_string>(this, L"get_string"sv);
+	f_define<GLfloat(*)(GLenum, GLenum), f_get_tex_parameterf>(this, L"get_tex_parameterf"sv);
+	f_define<t_pvalue(*)(GLenum, GLenum), f_get_tex_parameterfv>(this, L"get_tex_parameterfv"sv);
+	f_define<GLint(*)(GLenum, GLenum), f_get_tex_parameteri>(this, L"get_tex_parameteri"sv);
+	f_define<t_pvalue(*)(GLenum, GLenum), f_get_tex_parameteriv>(this, L"get_tex_parameteriv"sv);
+	f_define<GLfloat(*)(GLuint, GLenum), f_get_vertex_attribf>(this, L"get_vertex_attribf"sv);
+	f_define<t_pvalue(*)(GLuint, GLenum), f_get_vertex_attribfv>(this, L"get_vertex_attribfv"sv);
+	f_define<GLint(*)(GLuint, GLenum), f_get_vertex_attribi>(this, L"get_vertex_attribi"sv);
+	f_define<t_pvalue(*)(GLuint, GLenum), f_get_vertex_attribiv>(this, L"get_vertex_attribiv"sv);
+	f_define<GLintptr(*)(GLuint, GLenum), f_get_vertex_attrib_pointer>(this, L"get_vertex_attrib_pointer"sv);
+	f_define<void(*)(GLenum, GLenum), f_hint>(this, L"hint"sv);
+	f_define<bool(*)(GLenum), f_is_enabled>(this, L"is_enabled"sv);
+	f_define<void(*)(GLfloat), f_line_width>(this, L"line_width"sv);
+	f_define<void(*)(GLenum, GLint), f_pixel_storei>(this, L"pixel_storei"sv);
+	f_define<void(*)(GLfloat, GLfloat), f_polygon_offset>(this, L"polygon_offset"sv);
+	f_define<void(*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, t_bytes&), f_read_pixels>(this, L"read_pixels"sv);
+	f_define<void(*)(), f_release_shader_compiler>(this, L"release_shader_compiler"sv);
+	f_define<void(*)(GLenum, GLenum, GLsizei, GLsizei), f_renderbuffer_storage>(this, L"renderbuffer_storage"sv);
+	f_define<void(*)(GLclampf, bool), f_sample_coverage>(this, L"sample_coverage"sv);
+	f_define<void(*)(GLint, GLint, GLsizei, GLsizei), f_scissor>(this, L"scissor"sv);
+	f_define<void(*)(GLenum, GLint, GLuint), f_stencil_func>(this, L"stencil_func"sv);
+	f_define<void(*)(GLenum, GLenum, GLint, GLuint), f_stencil_func_separate>(this, L"stencil_func_separate"sv);
+	f_define<void(*)(GLuint), f_stencil_mask>(this, L"stencil_mask"sv);
+	f_define<void(*)(GLenum, GLuint), f_stencil_mask_separate>(this, L"stencil_mask_separate"sv);
+	f_define<void(*)(GLenum, GLenum, GLenum), f_stencil_op>(this, L"stencil_op"sv);
+	f_define<void(*)(GLenum, GLenum, GLenum, GLenum), f_stencil_op_separate>(this, L"stencil_op_separate"sv);
+	f_define<void(*)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const t_bytes&), f_tex_image2d>(this, L"tex_image2d"sv);
+	f_define<void(*)(GLenum, GLenum, GLfloat), f_tex_parameterf>(this, L"tex_parameterf"sv);
+	f_define<void(*)(GLenum, GLenum, GLfloat, GLfloat, GLfloat, GLfloat), f_tex_parameter4f>(this, L"tex_parameter4f"sv);
+	f_define<void(*)(GLenum, GLenum, GLint), f_tex_parameteri>(this, L"tex_parameteri"sv);
+	f_define<void(*)(GLenum, GLenum, GLint, GLint, GLint, GLint), f_tex_parameter4i>(this, L"tex_parameter4i"sv);
+	f_define<void(*)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const t_bytes&), f_tex_sub_image2d>(this, L"tex_sub_image2d"sv);
+	f_define<void(*)(const t_program*), f_use_program>(this, L"use_program"sv);
+	f_define<void(*)(GLuint, GLfloat), f_vertex_attrib1f>(this, L"vertex_attrib1f"sv);
+	f_define<void(*)(GLuint, GLfloat, GLfloat), f_vertex_attrib2f>(this, L"vertex_attrib2f"sv);
+	f_define<void(*)(GLuint, GLfloat, GLfloat, GLfloat), f_vertex_attrib3f>(this, L"vertex_attrib3f"sv);
+	f_define<void(*)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat), f_vertex_attrib4f>(this, L"vertex_attrib4f"sv);
+	f_define<void(*)(GLuint, GLint, GLenum, bool, GLsizei, GLintptr), f_vertex_attrib_pointer>(this, L"vertex_attrib_pointer"sv);
+	f_define<void(*)(GLint, GLint, GLsizei, GLsizei), f_viewport>(this, L"viewport"sv);
 	a_module->f_put(t_symbol::f_instantiate(L"DEPTH_BUFFER_BIT"sv), f_as(GL_DEPTH_BUFFER_BIT));
 	a_module->f_put(t_symbol::f_instantiate(L"STENCIL_BUFFER_BIT"sv), f_as(GL_STENCIL_BUFFER_BIT));
 	a_module->f_put(t_symbol::f_instantiate(L"COLOR_BUFFER_BIT"sv), f_as(GL_COLOR_BUFFER_BIT));

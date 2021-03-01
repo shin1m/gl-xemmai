@@ -12,7 +12,7 @@ class t_program
 	friend class t_type_of<t_object>;
 	friend class t_holds<t_program>;
 
-	std::map<GLuint, t_scoped>::iterator v_entry;
+	std::map<GLuint, t_root>::iterator v_entry;
 
 	t_program(t_session* a_session, GLuint a_id) : v_entry(a_session->v_programs.emplace(a_id, t_object::f_of(this)).first)
 	{
@@ -20,7 +20,7 @@ class t_program
 	~t_program() = default;
 
 public:
-	static t_scoped f_construct(t_type* a_class)
+	static t_pvalue f_construct(t_type* a_class)
 	{
 		auto session = t_session::f_instance();
 		GLuint id = glCreateProgram();
@@ -54,7 +54,7 @@ public:
 		glDetachShader(f_id(), a_shader.f_id());
 		t_error::f_check();
 	}
-	t_scoped f_get_active_attrib(GLuint a_index) const
+	t_pvalue f_get_active_attrib(GLuint a_index) const
 	{
 		GLint n = f_get_parameteri(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
 		GLint size;
@@ -63,7 +63,7 @@ public:
 		glGetActiveAttrib(f_id(), a_index, n, NULL, &size, &type, &name[0]);
 		return f_tuple(size, type, f_global()->f_as(f_convert(&name[0])));
 	}
-	t_scoped f_get_active_uniform(GLuint a_index) const
+	t_pvalue f_get_active_uniform(GLuint a_index) const
 	{
 		GLint n = f_get_parameteri(GL_ACTIVE_UNIFORM_MAX_LENGTH);
 		GLint size;
@@ -72,7 +72,7 @@ public:
 		glGetActiveUniform(f_id(), a_index, n, NULL, &size, &type, &name[0]);
 		return f_tuple(size, type, f_global()->f_as(f_convert(&name[0])));
 	}
-	t_scoped f_get_attached_shaders() const;
+	t_pvalue f_get_attached_shaders() const;
 	GLint f_get_attrib_location(std::wstring_view a_name) const
 	{
 		GLint index = glGetAttribLocation(f_id(), f_convert(a_name).c_str());
@@ -92,8 +92,8 @@ public:
 		glGetProgramInfoLog(f_id(), n, NULL, &log[0]);
 		return f_convert(&log[0]);
 	}
-	t_scoped f_get_uniformfv(const t_uniform_location& a_location) const;
-	t_scoped f_get_uniformiv(const t_uniform_location& a_location) const;
+	t_pvalue f_get_uniformfv(const t_uniform_location& a_location) const;
+	t_pvalue f_get_uniformiv(const t_uniform_location& a_location) const;
 	t_uniform_location f_get_uniform_location(std::wstring_view a_name) const
 	{
 		GLint index = glGetUniformLocation(f_id(), f_convert(a_name).c_str());
@@ -121,7 +121,7 @@ struct t_type_of<xemmaix::gl::t_program> : xemmaix::gl::t_holds<xemmaix::gl::t_p
 	static void f_define(t_extension* a_extension);
 
 	using t_base::t_base;
-	t_scoped f_do_construct(t_stacked* a_stack, size_t a_n);
+	t_pvalue f_do_construct(t_pvalue* a_stack, size_t a_n);
 };
 
 }

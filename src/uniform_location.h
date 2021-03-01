@@ -126,7 +126,7 @@ struct t_type_of<xemmaix::gl::t_uniform_location> : t_uninstantiatable<t_underiv
 	typedef xemmaix::gl::t_extension t_extension;
 
 	template<typename T>
-	static t_scoped f_transfer(const t_extension* a_extension, T&& a_value)
+	static t_pvalue f_transfer(const t_extension* a_extension, T&& a_value)
 	{
 		return xemmai::f_new<xemmaix::gl::t_uniform_location>(a_extension, false, std::forward<T>(a_value));
 	}

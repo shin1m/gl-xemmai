@@ -5,7 +5,7 @@ namespace xemmaix::gl
 
 void t_error::f_throw(GLenum a_error)
 {
-	throw f_new<t_error>(t_session::f_instance()->v_extension, false, L"error"sv, a_error);
+	throw t_rvalue(f_new<t_error>(t_session::f_instance()->v_extension, false, L"error"sv, a_error));
 }
 
 }

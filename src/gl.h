@@ -19,8 +19,7 @@ using namespace xemmai;
 using namespace xemmai::portable;
 
 class t_extension;
-template<typename T>
-class t_array_of;
+template<typename> class t_array_of;
 class t_error;
 class t_buffer;
 class t_framebuffer;
@@ -48,12 +47,12 @@ class t_session
 #endif
 
 	t_extension* v_extension;
-	std::map<GLuint, t_scoped> v_buffers;
-	std::map<GLuint, t_scoped> v_framebuffers;
-	std::map<GLuint, t_scoped> v_renderbuffers;
-	std::map<GLuint, t_scoped> v_textures;
-	std::map<GLuint, t_scoped> v_programs;
-	std::map<GLuint, t_scoped> v_shaders;
+	std::map<GLuint, t_root> v_buffers;
+	std::map<GLuint, t_root> v_framebuffers;
+	std::map<GLuint, t_root> v_renderbuffers;
+	std::map<GLuint, t_root> v_textures;
+	std::map<GLuint, t_root> v_programs;
+	std::map<GLuint, t_root> v_shaders;
 
 public:
 	static t_session* f_instance()
@@ -110,7 +109,7 @@ public:
 		return const_cast<t_extension*>(this)->f_type_slot<T>();
 	}
 	template<typename T>
-	t_scoped f_as(T&& a_value) const
+	t_pvalue f_as(T&& a_value) const
 	{
 		typedef t_type_of<typename t_fundamental<T>::t_type> t;
 		return t::f_transfer(f_extension<typename t::t_extension>(), std::forward<T>(a_value));
@@ -219,7 +218,7 @@ struct t_holds : t_underivable<t_bears<T>>
 		template<typename T1>
 		static T0* f_call(T1&& a_object)
 		{
-			return reinterpret_cast<size_t>(t_base::f_object(std::forward<T1>(a_object))) == t_value::e_tag__NULL ? nullptr : &t_cast<T0>::f_call(std::forward<T1>(a_object));
+			return t_base::f_object(std::forward<T1>(a_object)) ? &t_cast<T0>::f_call(std::forward<T1>(a_object)) : nullptr;
 		}
 	};
 	template<typename T0>
@@ -229,7 +228,7 @@ struct t_holds : t_underivable<t_bears<T>>
 		static bool f_call(T1&& a_object)
 		{
 			auto p = t_base::f_object(std::forward<T1>(a_object));
-			return reinterpret_cast<size_t>(p) >= t_value::e_tag__OBJECT && p->f_type()->template f_derives<typename t_fundamental<T0>::t_type>();
+			return reinterpret_cast<uintptr_t>(p) >= e_tag__OBJECT && p->f_type()->template f_derives<typename t_fundamental<T0>::t_type>();
 		}
 	};
 	template<typename T0>
@@ -239,12 +238,12 @@ struct t_holds : t_underivable<t_bears<T>>
 		static bool f_call(T1&& a_object)
 		{
 			auto p = t_base::f_object(std::forward<T1>(a_object));
-			switch (reinterpret_cast<size_t>(p)) {
-			case t_value::e_tag__NULL:
+			switch (reinterpret_cast<uintptr_t>(p)) {
+			case e_tag__NULL:
 				return true;
-			case t_value::e_tag__BOOLEAN:
-			case t_value::e_tag__INTEGER:
-			case t_value::e_tag__FLOAT:
+			case e_tag__BOOLEAN:
+			case e_tag__INTEGER:
+			case e_tag__FLOAT:
 				return false;
 			default:
 				return p->f_type()->template f_derives<typename t_fundamental<T0>::t_type>();
