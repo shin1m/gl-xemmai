@@ -9,10 +9,10 @@ t_pvalue t_program::f_get_attached_shaders() const
 	GLint n = f_get_parameteri(GL_ATTACHED_SHADERS);
 	std::vector<GLuint> shaders(n);
 	glGetAttachedShaders(f_id(), n, NULL, &shaders[0]);
-	auto p = t_tuple::f_instantiate(n);
-	auto& tuple = f_as<t_tuple&>(p);
-	for (GLint i = 0; i < n; ++i) new(&tuple[i]) t_svalue(session->v_shaders.find(shaders[i])->second);
-	return p;
+	return t_tuple::f_instantiate(n, [&](auto& tuple)
+	{
+		for (GLint i = 0; i < n; ++i) new(&tuple[i]) t_svalue(session->v_shaders.find(shaders[i])->second);
+	});
 }
 
 t_pvalue t_program::f_get_uniformfv(const t_uniform_location& a_location) const
