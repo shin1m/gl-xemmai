@@ -121,16 +121,16 @@ namespace xemmai
 {
 
 template<>
-struct t_type_of<xemmaix::gl::t_uniform_location> : t_uninstantiatable<t_underivable<t_holds<xemmaix::gl::t_uniform_location>>>
+struct t_type_of<xemmaix::gl::t_uniform_location> : t_uninstantiatable<t_holds<xemmaix::gl::t_uniform_location>>
 {
-	typedef xemmaix::gl::t_extension t_extension;
+	typedef xemmaix::gl::t_library t_library;
 
 	template<typename T>
-	static t_pvalue f_transfer(const t_extension* a_extension, T&& a_value)
+	static t_pvalue f_transfer(const t_library* a_library, T&& a_value)
 	{
-		return xemmai::f_new<xemmaix::gl::t_uniform_location>(a_extension, false, std::forward<T>(a_value));
+		return xemmai::f_new<xemmaix::gl::t_uniform_location>(a_library, std::forward<T>(a_value));
 	}
-	static void f_define(t_extension* a_extension);
+	static void f_define(t_library* a_library);
 
 	using t_base::t_base;
 };

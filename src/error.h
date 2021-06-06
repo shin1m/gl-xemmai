@@ -33,11 +33,11 @@ namespace xemmai
 {
 
 template<>
-struct t_type_of<xemmaix::gl::t_error> : t_uninstantiatable<t_underivable<t_bears<xemmaix::gl::t_error, t_type_of<t_throwable>>>>
+struct t_type_of<xemmaix::gl::t_error> : t_uninstantiatable<t_bears<xemmaix::gl::t_error, t_type_of<t_throwable>>>
 {
-	typedef xemmaix::gl::t_extension t_extension;
+	typedef xemmaix::gl::t_library t_library;
 
-	static void f_define(t_extension* a_extension);
+	static void f_define(t_library* a_library);
 
 	using t_base::t_base;
 };

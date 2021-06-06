@@ -25,7 +25,7 @@ public:
 		GLuint id;
 		glGenBuffers(1, &id);
 		t_error::f_check();
-		return a_class->f_new<t_buffer>(false, session, id);
+		return a_class->f_new<t_buffer>(session, id);
 	}
 
 	GLuint f_id() const
@@ -49,7 +49,7 @@ namespace xemmai
 template<>
 struct t_type_of<xemmaix::gl::t_buffer> : xemmaix::gl::t_holds<xemmaix::gl::t_buffer>
 {
-	static void f_define(t_extension* a_extension);
+	static void f_define(t_library* a_library);
 
 	using t_base::t_base;
 	t_pvalue f_do_construct(t_pvalue* a_stack, size_t a_n);

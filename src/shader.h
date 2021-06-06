@@ -24,7 +24,7 @@ public:
 		auto session = t_session::f_instance();
 		GLuint id = glCreateShader(a_type);
 		t_error::f_check();
-		return a_class->f_new<t_shader>(false, session, id);
+		return a_class->f_new<t_shader>(session, id);
 	}
 
 	GLuint f_id() const
@@ -78,7 +78,7 @@ namespace xemmai
 template<>
 struct t_type_of<xemmaix::gl::t_shader> : xemmaix::gl::t_holds<xemmaix::gl::t_shader>
 {
-	static void f_define(t_extension* a_extension);
+	static void f_define(t_library* a_library);
 
 	using t_base::t_base;
 	t_pvalue f_do_construct(t_pvalue* a_stack, size_t a_n);

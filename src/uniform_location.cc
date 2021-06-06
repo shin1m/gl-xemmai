@@ -3,10 +3,10 @@
 namespace xemmai
 {
 
-void t_type_of<xemmaix::gl::t_uniform_location>::f_define(t_extension* a_extension)
+void t_type_of<xemmaix::gl::t_uniform_location>::f_define(t_library* a_library)
 {
 	using namespace xemmaix::gl;
-	t_define<t_uniform_location, t_object>(a_extension, L"UniformLocation"sv)
+	t_define{a_library}
 		(L"uniform1f"sv, t_member<void(t_uniform_location::*)(GLfloat), &t_uniform_location::f_uniform1f>())
 		(L"uniform1fv"sv, t_member<void(t_uniform_location::*)(const t_bytes&), &t_uniform_location::f_uniform1fv>())
 		(L"uniform1i"sv, t_member<void(t_uniform_location::*)(GLint), &t_uniform_location::f_uniform1i>())
@@ -26,7 +26,7 @@ void t_type_of<xemmaix::gl::t_uniform_location>::f_define(t_extension* a_extensi
 		(L"matrix2fv"sv, t_member<void(t_uniform_location::*)(bool, const t_bytes&), &t_uniform_location::f_matrix2fv>())
 		(L"matrix3fv"sv, t_member<void(t_uniform_location::*)(bool, const t_bytes&), &t_uniform_location::f_matrix3fv>())
 		(L"matrix4fv"sv, t_member<void(t_uniform_location::*)(bool, const t_bytes&), &t_uniform_location::f_matrix4fv>())
-	;
+	.f_derive<t_uniform_location, t_object>();
 }
 
 }

@@ -1,10 +1,7 @@
 #ifndef XEMMAIX__GL__GL_H
 #define XEMMAIX__GL__GL_H
 
-#include <map>
 #include <xemmai/convert.h>
-#include <xemmai/tuple.h>
-#include <xemmai/bytes.h>
 #ifdef _WIN32
 #include <GL/glew.h>
 #else
@@ -18,7 +15,7 @@ namespace xemmaix::gl
 using namespace xemmai;
 using namespace xemmai::portable;
 
-class t_extension;
+class t_library;
 template<typename> class t_array_of;
 class t_error;
 class t_buffer;
@@ -46,7 +43,7 @@ class t_session
 	static bool v_glew;
 #endif
 
-	t_extension* v_extension;
+	t_library* v_library;
 	std::map<GLuint, t_root> v_buffers;
 	std::map<GLuint, t_root> v_framebuffers;
 	std::map<GLuint, t_root> v_renderbuffers;
@@ -68,15 +65,15 @@ public:
 		return v_instance;
 	}
 
-	t_session(t_extension* a_extension);
+	t_session(t_library* a_library);
 	~t_session();
-	t_extension* f_extension() const
+	t_library* f_library() const
 	{
-		return v_extension;
+		return v_library;
 	}
 };
 
-class t_extension : public xemmai::t_extension
+class t_library : public xemmai::t_library
 {
 	t_slot_of<t_type> v_type_array_of_int16;
 	t_slot_of<t_type> v_type_array_of_int32;
@@ -91,10 +88,11 @@ class t_extension : public xemmai::t_extension
 	t_slot_of<t_type> v_type_uniform_location;
 
 public:
-	t_extension(t_object* a_module);
+	using xemmai::t_library::t_library;
 	virtual void f_scan(t_scan a_scan);
+	virtual std::vector<std::pair<t_root, t_rvalue>> f_define();
 	template<typename T>
-	const T* f_extension() const
+	const T* f_library() const
 	{
 		return f_global();
 	}
@@ -106,90 +104,36 @@ public:
 	template<typename T>
 	t_type* f_type() const
 	{
-		return const_cast<t_extension*>(this)->f_type_slot<T>();
+		return const_cast<t_library*>(this)->f_type_slot<T>();
 	}
 	template<typename T>
 	t_pvalue f_as(T&& a_value) const
 	{
 		typedef t_type_of<typename t_fundamental<T>::t_type> t;
-		return t::f_transfer(f_extension<typename t::t_extension>(), std::forward<T>(a_value));
+		return t::f_transfer(f_library<typename t::t_library>(), std::forward<T>(a_value));
 	}
 };
 
 template<>
-inline const t_extension* t_extension::f_extension<t_extension>() const
+inline const t_library* t_library::f_library<t_library>() const
 {
 	return this;
 }
 
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_array_of<short>>()
-{
-	return v_type_array_of_int16;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_array_of<int>>()
-{
-	return v_type_array_of_int32;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_array_of<float>>()
-{
-	return v_type_array_of_float32;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_error>()
-{
-	return v_type_error;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_buffer>()
-{
-	return v_type_buffer;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_framebuffer>()
-{
-	return v_type_framebuffer;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_renderbuffer>()
-{
-	return v_type_renderbuffer;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_texture>()
-{
-	return v_type_texture;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_program>()
-{
-	return v_type_program;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_shader>()
-{
-	return v_type_shader;
-}
-
-template<>
-inline t_slot_of<t_type>& t_extension::f_type_slot<t_uniform_location>()
-{
-	return v_type_uniform_location;
-}
+XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<short>, array_of_int16)
+XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<int>, array_of_int32)
+XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<float>, array_of_float32)
+XEMMAI__LIBRARY__TYPE(t_library, error)
+XEMMAI__LIBRARY__TYPE(t_library, buffer)
+XEMMAI__LIBRARY__TYPE(t_library, framebuffer)
+XEMMAI__LIBRARY__TYPE(t_library, renderbuffer)
+XEMMAI__LIBRARY__TYPE(t_library, texture)
+XEMMAI__LIBRARY__TYPE(t_library, program)
+XEMMAI__LIBRARY__TYPE(t_library, shader)
+XEMMAI__LIBRARY__TYPE(t_library, uniform_location)
 
 template<typename T>
-struct t_holds : t_underivable<t_bears<T>>
+struct t_holds : t_bears<T>
 {
 	template<typename T0>
 	struct t_cast
@@ -250,10 +194,10 @@ struct t_holds : t_underivable<t_bears<T>>
 			}
 		}
 	};
-	typedef xemmaix::gl::t_extension t_extension;
+	typedef xemmaix::gl::t_library t_library;
 	typedef t_holds t_base;
 
-	using t_underivable<t_bears<T>>::t_underivable;
+	using t_bears<T>::t_bears;
 	static void f_do_finalize(t_object* a_this)
 	{
 		auto& p = a_this->f_as<T>();

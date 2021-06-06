@@ -36,10 +36,10 @@ t_pvalue t_program::f_get_uniformiv(const t_uniform_location& a_location) const
 namespace xemmai
 {
 
-void t_type_of<xemmaix::gl::t_program>::f_define(t_extension* a_extension)
+void t_type_of<xemmaix::gl::t_program>::f_define(t_library* a_library)
 {
 	using namespace xemmaix::gl;
-	t_define<t_program, t_object>(a_extension, L"Program"sv)
+	t_define{a_library}
 		(L"delete"sv, t_member<void(t_program::*)(), &t_program::f_delete>())
 		(L"attach_shader"sv, t_member<void(t_program::*)(const t_shader&), &t_program::f_attach_shader>())
 		(L"bind_attrib_location"sv, t_member<void(t_program::*)(GLuint, std::wstring_view), &t_program::f_bind_attrib_location>())
@@ -55,7 +55,7 @@ void t_type_of<xemmaix::gl::t_program>::f_define(t_extension* a_extension)
 		(L"get_uniform_location"sv, t_member<t_uniform_location(t_program::*)(std::wstring_view) const, &t_program::f_get_uniform_location>())
 		(L"link"sv, t_member<void(t_program::*)(), &t_program::f_link>())
 		(L"validate"sv, t_member<void(t_program::*)(), &t_program::f_validate>())
-	;
+	.f_derive<t_program, t_object>();
 }
 
 t_pvalue t_type_of<xemmaix::gl::t_program>::f_do_construct(t_pvalue* a_stack, size_t a_n)

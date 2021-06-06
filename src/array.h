@@ -63,11 +63,11 @@ namespace xemmai
 {
 
 template<typename T>
-struct t_type_of<xemmaix::gl::t_array_of<T>> : t_underivable<t_holds<xemmaix::gl::t_array_of<T>>>
+struct t_type_of<xemmaix::gl::t_array_of<T>> : t_holds<xemmaix::gl::t_array_of<T>>
 {
-	typedef xemmaix::gl::t_extension t_extension;
+	typedef xemmaix::gl::t_library t_library;
 
-	static void f_define(t_extension* a_extension, std::wstring_view a_name);
+	static void f_define(t_library* a_library);
 
 	using t_type_of::t_base::t_base;
 	static void f_do_scan(t_object* a_this, t_scan a_scan);
@@ -77,13 +77,13 @@ struct t_type_of<xemmaix::gl::t_array_of<T>> : t_underivable<t_holds<xemmaix::gl
 };
 
 template<typename T>
-void t_type_of<xemmaix::gl::t_array_of<T>>::f_define(t_extension* a_extension, std::wstring_view a_name)
+void t_type_of<xemmaix::gl::t_array_of<T>>::f_define(t_library* a_library)
 {
 	using namespace xemmaix::gl;
-	t_define<t_array_of<T>, t_object>(a_extension, a_name)
+	t_define{a_library}
 		(L"BYTES_PER_ELEMENT"sv, sizeof(T))
 		(L"size"sv, t_member<size_t(t_array_of<T>::*)() const, &t_array_of<T>::f_size>())
-	;
+	.template f_derive<t_array_of<T>, t_object>();
 }
 
 template<typename T>
@@ -96,9 +96,9 @@ template<typename T>
 t_pvalue t_type_of<xemmaix::gl::t_array_of<T>>::f_do_construct(t_pvalue* a_stack, size_t a_n)
 {
 	return t_overload<
-		t_construct<false, const t_pvalue&>,
-		t_construct<false, const t_pvalue&, size_t>,
-		t_construct<false, const t_pvalue&, size_t, size_t>
+		t_construct<const t_pvalue&>,
+		t_construct<const t_pvalue&, size_t>,
+		t_construct<const t_pvalue&, size_t, size_t>
 	>::t_bind<xemmaix::gl::t_array_of<T>>::f_do(this, a_stack, a_n);
 }
 
