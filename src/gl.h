@@ -36,8 +36,7 @@ class t_session
 	friend class t_program;
 	friend class t_shader;
 
-	static std::mutex v_mutex;
-	static bool v_running;
+	static std::atomic_flag v_running;
 	static XEMMAI__PORTABLE__THREAD t_session* v_instance;
 #ifdef _WIN32
 	static bool v_glew;

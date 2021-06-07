@@ -14,8 +14,7 @@ namespace xemmaix::gl
 
 using namespace xemmai;
 
-std::mutex t_session::v_mutex;
-bool t_session::v_running = false;
+std::atomic_flag t_session::v_running = ATOMIC_FLAG_INIT;
 XEMMAI__PORTABLE__THREAD t_session* t_session::v_instance;
 #ifdef _WIN32
 bool t_session::v_glew = false;
@@ -23,9 +22,7 @@ bool t_session::v_glew = false;
 
 t_session::t_session(t_library* a_library) : v_library(a_library)
 {
-	std::unique_lock lock(v_mutex);
-	if (v_running) f_throw(L"main already running."sv);
-	v_running = true;
+	if (v_running.test_and_set(std::memory_order_acquire)) f_throw(L"main already running."sv);
 	v_instance = this;
 }
 
@@ -37,9 +34,8 @@ t_session::~t_session()
 	while (!v_textures.empty()) v_textures.begin()->second->f_as<t_texture>().f_delete();
 	while (!v_programs.empty()) v_programs.begin()->second->f_as<t_program>().f_delete();
 	while (!v_shaders.empty()) v_shaders.begin()->second->f_as<t_shader>().f_delete();
-	std::unique_lock lock(v_mutex);
-	v_running = false;
 	v_instance = nullptr;
+	v_running.clear(std::memory_order_release);
 }
 
 namespace
