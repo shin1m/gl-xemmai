@@ -65,7 +65,7 @@ namespace xemmai
 template<typename T>
 struct t_type_of<xemmaix::gl::t_array_of<T>> : t_holds<xemmaix::gl::t_array_of<T>>
 {
-	typedef xemmaix::gl::t_library t_library;
+	using t_library = xemmaix::gl::t_library;
 
 	static void f_define(t_library* a_library);
 

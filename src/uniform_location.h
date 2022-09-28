@@ -123,7 +123,7 @@ namespace xemmai
 template<>
 struct t_type_of<xemmaix::gl::t_uniform_location> : t_uninstantiatable<t_holds<xemmaix::gl::t_uniform_location>>
 {
-	typedef xemmaix::gl::t_library t_library;
+	using t_library = xemmaix::gl::t_library;
 
 	template<typename T>
 	static t_pvalue f_transfer(const t_library* a_library, T&& a_value)

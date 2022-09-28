@@ -108,7 +108,7 @@ public:
 	template<typename T>
 	t_pvalue f_as(T&& a_value) const
 	{
-		typedef t_type_of<typename t_fundamental<T>::t_type> t;
+		using t = t_type_of<typename t_fundamental<T>::t_type>;
 		return t::f_transfer(f_library<typename t::t_library>(), std::forward<T>(a_value));
 	}
 };
@@ -193,8 +193,8 @@ struct t_holds : t_bears<T>
 			}
 		}
 	};
-	typedef xemmaix::gl::t_library t_library;
-	typedef t_holds t_base;
+	using t_library = xemmaix::gl::t_library;
+	using t_base = t_holds;
 
 	using t_bears<T>::t_bears;
 	static void f_do_finalize(t_object* a_this)
