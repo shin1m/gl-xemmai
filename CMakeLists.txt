@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
-project(gl-xemmai VERSION 202205)
-find_package(xemmai 202205 REQUIRED)
+project(gl-xemmai VERSION 202211)
+find_package(xemmai 202211 REQUIRED)
 find_package(OpenGL 1.2 REQUIRED)
 add_subdirectory(src)
 install(TARGETS gl DESTINATION lib/xemmai-${xemmai_VERSION_MAJOR})

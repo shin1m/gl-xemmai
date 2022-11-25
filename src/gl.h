@@ -88,37 +88,10 @@ class t_library : public xemmai::t_library
 
 public:
 	using xemmai::t_library::t_library;
-	virtual void f_scan(t_scan a_scan);
-	virtual std::vector<std::pair<t_root, t_rvalue>> f_define();
-	template<typename T>
-	const T* f_library() const
-	{
-		return f_global();
-	}
-	template<typename T>
-	t_slot_of<t_type>& f_type_slot()
-	{
-		return f_global()->f_type_slot<T>();
-	}
-	template<typename T>
-	t_type* f_type() const
-	{
-		return const_cast<t_library*>(this)->f_type_slot<T>();
-	}
-	template<typename T>
-	t_pvalue f_as(T&& a_value) const
-	{
-		using t = t_type_of<typename t_fundamental<T>::t_type>;
-		return t::f_transfer(f_library<typename t::t_library>(), std::forward<T>(a_value));
-	}
+	XEMMAI__LIBRARY__MEMBERS
 };
 
-template<>
-inline const t_library* t_library::f_library<t_library>() const
-{
-	return this;
-}
-
+XEMMAI__LIBRARY__BASE(t_library, t_global, f_global())
 XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<short>, array_of_int16)
 XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<int>, array_of_int32)
 XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<float>, array_of_float32)
