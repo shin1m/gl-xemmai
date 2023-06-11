@@ -125,10 +125,9 @@ struct t_type_of<xemmaix::gl::t_uniform_location> : t_uninstantiatable<t_holds<x
 {
 	using t_library = xemmaix::gl::t_library;
 
-	template<typename T>
-	static t_pvalue f_transfer(const t_library* a_library, T&& a_value)
+	static t_pvalue f_transfer(const t_library* a_library, auto&& a_value)
 	{
-		return xemmai::f_new<xemmaix::gl::t_uniform_location>(a_library, std::forward<T>(a_value));
+		return xemmai::f_new<xemmaix::gl::t_uniform_location>(a_library, std::forward<decltype(a_value)>(a_value));
 	}
 	static void f_define(t_library* a_library);
 

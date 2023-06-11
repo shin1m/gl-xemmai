@@ -14,7 +14,7 @@ namespace xemmaix::gl
 
 using namespace xemmai;
 
-std::atomic_flag t_session::v_running = ATOMIC_FLAG_INIT;
+std::atomic_flag t_session::v_running;
 XEMMAI__PORTABLE__THREAD t_session* t_session::v_instance;
 #ifdef _WIN32
 bool t_session::v_glew = false;

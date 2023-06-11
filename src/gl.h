@@ -107,54 +107,38 @@ XEMMAI__LIBRARY__TYPE(t_library, uniform_location)
 template<typename T>
 struct t_holds : t_bears<T>
 {
-	template<typename T0>
+	template<typename U>
+	static U& f_cast(auto&& a_object)
+	{
+		xemmaix::gl::t_session::f_instance();
+		auto& p = static_cast<t_object*>(a_object)->f_as<U>();
+		if (p.v_entry == decltype(p.v_entry){}) f_throw(L"already destroyed."sv);
+		return p;
+	}
+	template<typename U>
 	struct t_cast
 	{
-		template<typename T1>
-		static T0& f_call(T1&& a_object)
+		static U f_as(auto&& a_object)
 		{
-			xemmaix::gl::t_session::f_instance();
-			auto& p = t_base::f_object(std::forward<T1>(a_object))->template f_as<T0>();
-			if (p.v_entry == decltype(p.v_entry){}) f_throw(L"already destroyed."sv);
-			return p;
+			return f_cast<typename t_fundamental<U>::t_type>(std::forward<decltype(a_object)>(a_object));
+		}
+		static bool f_is(auto&& a_object)
+		{
+			auto p = static_cast<t_object*>(a_object);
+			return reinterpret_cast<uintptr_t>(p) >= e_tag__OBJECT && p->f_type()->f_derives<typename t_fundamental<U>::t_type>();
 		}
 	};
-	template<typename T0>
-	struct t_as
+	template<typename U>
+	struct t_cast<U*>
 	{
-		template<typename T1>
-		static T0 f_call(T1&& a_object)
+		static U* f_as(auto&& a_object)
 		{
-			return t_cast<typename t_fundamental<T0>::t_type>::f_call(std::forward<T1>(a_object));
+			return static_cast<t_object*>(a_object) ? &f_cast<U>(std::forward<decltype(a_object)>(a_object)) : nullptr;
 		}
-	};
-	template<typename T0>
-	struct t_as<T0*>
-	{
-		template<typename T1>
-		static T0* f_call(T1&& a_object)
+		static bool f_is(auto&& a_object)
 		{
-			return t_base::f_object(std::forward<T1>(a_object)) ? &t_cast<T0>::f_call(std::forward<T1>(a_object)) : nullptr;
-		}
-	};
-	template<typename T0>
-	struct t_is
-	{
-		template<typename T1>
-		static bool f_call(T1&& a_object)
-		{
-			auto p = t_base::f_object(std::forward<T1>(a_object));
-			return reinterpret_cast<uintptr_t>(p) >= e_tag__OBJECT && p->f_type()->template f_derives<typename t_fundamental<T0>::t_type>();
-		}
-	};
-	template<typename T0>
-	struct t_is<T0*>
-	{
-		template<typename T1>
-		static bool f_call(T1&& a_object)
-		{
-			auto p = t_base::f_object(std::forward<T1>(a_object));
-			return reinterpret_cast<uintptr_t>(p) == e_tag__NULL || reinterpret_cast<uintptr_t>(p) >= e_tag__OBJECT && p->f_type()->template f_derives<typename t_fundamental<T0>::t_type>();
+			auto p = static_cast<t_object*>(a_object);
+			return reinterpret_cast<uintptr_t>(p) == e_tag__NULL || reinterpret_cast<uintptr_t>(p) >= e_tag__OBJECT && p->f_type()->f_derives<typename t_fundamental<U>::t_type>();
 		}
 	};
 	using t_library = xemmaix::gl::t_library;
