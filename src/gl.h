@@ -124,7 +124,7 @@ struct t_holds : t_bears<T>
 		}
 		static bool f_is(t_object* a_object)
 		{
-			return reinterpret_cast<uintptr_t>(a_object) >= e_tag__OBJECT && a_object->f_type()->f_derives<typename t_fundamental<U>::t_type>();
+			return reinterpret_cast<uintptr_t>(a_object) >= c_tag__OBJECT && a_object->f_type()->f_derives<typename t_fundamental<U>::t_type>();
 		}
 	};
 	template<typename U>
@@ -136,7 +136,7 @@ struct t_holds : t_bears<T>
 		}
 		static bool f_is(t_object* a_object)
 		{
-			return reinterpret_cast<uintptr_t>(a_object) == e_tag__NULL || reinterpret_cast<uintptr_t>(a_object) >= e_tag__OBJECT && a_object->f_type()->f_derives<typename t_fundamental<U>::t_type>();
+			return reinterpret_cast<uintptr_t>(a_object) == c_tag__NULL || reinterpret_cast<uintptr_t>(a_object) >= c_tag__OBJECT && a_object->f_type()->f_derives<typename t_fundamental<U>::t_type>();
 		}
 	};
 	using t_library = xemmaix::gl::t_library;
