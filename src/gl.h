@@ -66,10 +66,6 @@ public:
 
 	t_session(t_library* a_library);
 	~t_session();
-	t_library* f_library() const
-	{
-		return v_library;
-	}
 };
 
 class t_library : public xemmai::t_library
