@@ -7,7 +7,7 @@ void t_type_of<xemmaix::gl::t_framebuffer>::f_define(t_library* a_library)
 {
 	using namespace xemmaix::gl;
 	t_define{a_library}
-		(L"delete"sv, t_member<void(t_framebuffer::*)(), &t_framebuffer::f_delete>())
+	(L"delete"sv, t_member<void(t_framebuffer::*)(), &t_framebuffer::f_delete>())
 	.f_derive<t_framebuffer, t_object>();
 }
 

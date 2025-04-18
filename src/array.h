@@ -81,8 +81,8 @@ void t_type_of<xemmaix::gl::t_array_of<T>>::f_define(t_library* a_library)
 {
 	using namespace xemmaix::gl;
 	t_define{a_library}
-		(L"BYTES_PER_ELEMENT"sv, sizeof(T))
-		(L"size"sv, t_member<size_t(t_array_of<T>::*)() const, &t_array_of<T>::f_size>())
+	(L"BYTES_PER_ELEMENT"sv, sizeof(T))
+	(L"size"sv, t_member<size_t(t_array_of<T>::*)() const, &t_array_of<T>::f_size>())
 	.template f_derive<t_array_of<T>, t_object>();
 }
 

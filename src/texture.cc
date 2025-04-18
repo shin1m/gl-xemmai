@@ -7,7 +7,7 @@ void t_type_of<xemmaix::gl::t_texture>::f_define(t_library* a_library)
 {
 	using namespace xemmaix::gl;
 	t_define{a_library}
-		(L"delete"sv, t_member<void(t_texture::*)(), &t_texture::f_delete>())
+	(L"delete"sv, t_member<void(t_texture::*)(), &t_texture::f_delete>())
 	.f_derive<t_texture, t_object>();
 }
 
