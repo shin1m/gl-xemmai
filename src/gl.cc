@@ -647,17 +647,7 @@ inline void f_vertex_attrib4f(GLuint a_index, GLfloat a_x, GLfloat a_y, GLfloat 
 
 void t_library::f_scan(t_scan a_scan)
 {
-	a_scan(v_type_array_of_int16);
-	a_scan(v_type_array_of_int32);
-	a_scan(v_type_array_of_float32);
-	a_scan(v_type_error);
-	a_scan(v_type_buffer);
-	a_scan(v_type_framebuffer);
-	a_scan(v_type_renderbuffer);
-	a_scan(v_type_texture);
-	a_scan(v_type_program);
-	a_scan(v_type_shader);
-	a_scan(v_type_uniform_location);
+	XEMMAIX__GL__TYPES(XEMMAI__TYPE__SCAN)
 }
 
 std::vector<std::pair<t_root, t_rvalue>> t_library::f_define()

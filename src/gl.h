@@ -70,17 +70,19 @@ public:
 
 class t_library : public xemmai::t_library
 {
-	t_slot_of<t_type> v_type_array_of_int16;
-	t_slot_of<t_type> v_type_array_of_int32;
-	t_slot_of<t_type> v_type_array_of_float32;
-	t_slot_of<t_type> v_type_error;
-	t_slot_of<t_type> v_type_buffer;
-	t_slot_of<t_type> v_type_framebuffer;
-	t_slot_of<t_type> v_type_renderbuffer;
-	t_slot_of<t_type> v_type_texture;
-	t_slot_of<t_type> v_type_program;
-	t_slot_of<t_type> v_type_shader;
-	t_slot_of<t_type> v_type_uniform_location;
+#define XEMMAIX__GL__TYPES(_)\
+	_##_AS(t_array_of<short>, array_of_int16)\
+	_##_AS(t_array_of<int>, array_of_int32)\
+	_##_AS(t_array_of<float>, array_of_float32)\
+	_(error)\
+	_(buffer)\
+	_(framebuffer)\
+	_(renderbuffer)\
+	_(texture)\
+	_(program)\
+	_(shader)\
+	_(uniform_location)
+	XEMMAIX__GL__TYPES(XEMMAI__TYPE__DECLARE)
 
 public:
 	using xemmai::t_library::t_library;
@@ -88,17 +90,9 @@ public:
 };
 
 XEMMAI__LIBRARY__BASE(t_library, t_global, f_global())
-XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<short>, array_of_int16)
-XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<int>, array_of_int32)
-XEMMAI__LIBRARY__TYPE_AS(t_library, t_array_of<float>, array_of_float32)
-XEMMAI__LIBRARY__TYPE(t_library, error)
-XEMMAI__LIBRARY__TYPE(t_library, buffer)
-XEMMAI__LIBRARY__TYPE(t_library, framebuffer)
-XEMMAI__LIBRARY__TYPE(t_library, renderbuffer)
-XEMMAI__LIBRARY__TYPE(t_library, texture)
-XEMMAI__LIBRARY__TYPE(t_library, program)
-XEMMAI__LIBRARY__TYPE(t_library, shader)
-XEMMAI__LIBRARY__TYPE(t_library, uniform_location)
+#define XEMMAI__TYPE__LIBRARY t_library
+XEMMAIX__GL__TYPES(XEMMAI__TYPE__DEFINE)
+#undef XEMMAI__TYPE__LIBRARY
 
 template<typename T>
 struct t_holds : t_bears<T>
