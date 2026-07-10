@@ -14,9 +14,6 @@ class t_program
 
 	std::map<GLuint, t_root>::iterator v_entry;
 
-	t_program(t_session* a_session, GLuint a_id) : v_entry(a_session->v_programs.emplace(a_id, t_object::f_of(this)).first)
-	{
-	}
 	~t_program() = default;
 
 public:
@@ -25,7 +22,9 @@ public:
 		auto session = t_session::f_instance();
 		GLuint id = glCreateProgram();
 		t_error::f_check();
-		return a_class->f_new<t_program>(session, id);
+		auto p = a_class->f_new<t_program>();
+		p->f_as<t_program>().v_entry = session->v_programs.emplace(id, p).first;
+		return p;
 	}
 
 	GLuint f_id() const

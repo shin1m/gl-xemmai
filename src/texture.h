@@ -13,9 +13,6 @@ class t_texture
 
 	std::map<GLuint, t_root>::iterator v_entry;
 
-	t_texture(t_session* a_session, GLuint a_id) : v_entry(a_session->v_textures.emplace(a_id, t_object::f_of(this)).first)
-	{
-	}
 	~t_texture() = default;
 
 public:
@@ -25,7 +22,9 @@ public:
 		GLuint id;
 		glGenTextures(1, &id);
 		t_error::f_check();
-		return a_class->f_new<t_texture>(session, id);
+		auto p = a_class->f_new<t_texture>();
+		p->f_as<t_texture>().v_entry = session->v_textures.emplace(id, p).first;
+		return p;
 	}
 
 	GLuint f_id() const

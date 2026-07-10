@@ -13,9 +13,6 @@ class t_framebuffer
 
 	std::map<GLuint, t_root>::iterator v_entry;
 
-	t_framebuffer(t_session* a_session, GLuint a_id) : v_entry(a_session->v_framebuffers.emplace(a_id, t_object::f_of(this)).first)
-	{
-	}
 	~t_framebuffer() = default;
 
 public:
@@ -25,7 +22,9 @@ public:
 		GLuint id;
 		glGenFramebuffers(1, &id);
 		t_error::f_check();
-		return a_class->f_new<t_framebuffer>(session, id);
+		auto p = a_class->f_new<t_framebuffer>();
+		p->f_as<t_framebuffer>().v_entry = session->v_framebuffers.emplace(id, p).first;
+		return p;
 	}
 
 	GLuint f_id() const

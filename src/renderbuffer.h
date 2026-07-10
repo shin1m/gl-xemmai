@@ -13,9 +13,6 @@ class t_renderbuffer
 
 	std::map<GLuint, t_root>::iterator v_entry;
 
-	t_renderbuffer(t_session* a_session, GLuint a_id) : v_entry(a_session->v_renderbuffers.emplace(a_id, t_object::f_of(this)).first)
-	{
-	}
 	~t_renderbuffer() = default;
 
 public:
@@ -25,7 +22,9 @@ public:
 		GLuint id;
 		glGenRenderbuffers(1, &id);
 		t_error::f_check();
-		return a_class->f_new<t_renderbuffer>(session, id);
+		auto p = a_class->f_new<t_renderbuffer>();
+		p->f_as<t_renderbuffer>().v_entry = session->v_renderbuffers.emplace(id, p).first;
+		return p;
 	}
 
 	GLuint f_id() const

@@ -13,9 +13,6 @@ class t_shader
 
 	std::map<GLuint, t_root>::iterator v_entry;
 
-	t_shader(t_session* a_session, GLuint a_id) : v_entry(a_session->v_shaders.emplace(a_id, t_object::f_of(this)).first)
-	{
-	}
 	~t_shader() = default;
 
 public:
@@ -24,7 +21,9 @@ public:
 		auto session = t_session::f_instance();
 		GLuint id = glCreateShader(a_type);
 		t_error::f_check();
-		return a_class->f_new<t_shader>(session, id);
+		auto p = a_class->f_new<t_shader>();
+		p->f_as<t_shader>().v_entry = session->v_shaders.emplace(id, p).first;
+		return p;
 	}
 
 	GLuint f_id() const
