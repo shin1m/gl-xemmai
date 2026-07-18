@@ -6,37 +6,11 @@
 namespace xemmaix::gl
 {
 
-class t_renderbuffer
+struct t_renderbuffer : t_base_of<t_renderbuffer, &t_session::v_renderbuffers>
 {
-	friend class t_type_of<t_object>;
-	friend class t_holds<t_renderbuffer>;
-
-	std::map<GLuint, t_root>::iterator v_entry;
-
-	~t_renderbuffer() = default;
-
-public:
-	static t_pvalue f_construct(t_type* a_class)
-	{
-		auto session = t_session::f_instance();
-		GLuint id;
-		glGenRenderbuffers(1, &id);
-		t_error::f_check();
-		auto p = a_class->f_new<t_renderbuffer>();
-		p->f_as<t_renderbuffer>().v_entry = session->v_renderbuffers.emplace(id, p).first;
-		return p;
-	}
-
-	GLuint f_id() const
-	{
-		return v_entry->first;
-	}
 	void f_delete()
 	{
-		glDeleteRenderbuffers(1, &v_entry->first);
-		t_error::f_check();
-		t_session::f_instance()->v_renderbuffers.erase(v_entry);
-		v_entry = {};
+		t_base_of::f_delete(f_delete1<glDeleteRenderbuffers>);
 	}
 };
 

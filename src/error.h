@@ -27,6 +27,56 @@ public:
 	}
 };
 
+template<typename T, std::map<GLuint, t_root> t_session::*A_map>
+class t_base_of
+{
+	friend class t_type_of<T>;
+	friend class t_holds<T>;
+
+	template<auto A_new>
+	static t_object* f_new(t_type* a_class, auto&&... a_xs)
+	{
+		auto session = t_session::f_instance();
+		auto id = A_new(std::forward<decltype(a_xs)>(a_xs)...);
+		t_error::f_check();
+		auto p = a_class->f_new<T>();
+		p->template f_as<T>().v_entry = (session->*A_map).emplace(id, p).first;
+		return p;
+	}
+
+	std::map<GLuint, t_root>::iterator v_entry;
+
+protected:
+	~t_base_of() = default;
+
+public:
+	GLuint f_id() const
+	{
+		return v_entry->first;
+	}
+	void f_delete(auto a_delete)
+	{
+		a_delete(f_id());
+		t_error::f_check();
+		(t_session::f_instance()->*A_map).erase(v_entry);
+		v_entry = {};
+	}
+};
+
+template<void(*A_do)(GLsizei, GLuint*)>
+GLuint f_new1()
+{
+	GLuint id;
+	A_do(1, &id);
+	return id;
+}
+
+template<void(*A_do)(GLsizei, const GLuint*)>
+void f_delete1(GLuint a_id)
+{
+	A_do(1, &a_id);
+}
+
 }
 
 namespace xemmai

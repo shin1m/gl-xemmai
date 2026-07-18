@@ -6,37 +6,11 @@
 namespace xemmaix::gl
 {
 
-class t_buffer
+struct t_buffer : t_base_of<t_buffer, &t_session::v_buffers>
 {
-	friend class t_type_of<t_object>;
-	friend class t_holds<t_buffer>;
-
-	std::map<GLuint, t_root>::iterator v_entry;
-
-	~t_buffer() = default;
-
-public:
-	static t_pvalue f_construct(t_type* a_class)
-	{
-		auto session = t_session::f_instance();
-		GLuint id;
-		glGenBuffers(1, &id);
-		t_error::f_check();
-		auto p = a_class->f_new<t_buffer>();
-		p->f_as<t_buffer>().v_entry = session->v_buffers.emplace(id, p).first;
-		return p;
-	}
-
-	GLuint f_id() const
-	{
-		return v_entry->first;
-	}
 	void f_delete()
 	{
-		glDeleteBuffers(1, &v_entry->first);
-		t_error::f_check();
-		t_session::f_instance()->v_buffers.erase(v_entry);
-		v_entry = {};
+		t_base_of::f_delete(f_delete1<glDeleteBuffers>);
 	}
 };
 

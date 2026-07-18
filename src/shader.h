@@ -6,36 +6,11 @@
 namespace xemmaix::gl
 {
 
-class t_shader
+struct t_shader : t_base_of<t_shader, &t_session::v_shaders>
 {
-	friend class t_type_of<t_object>;
-	friend class t_holds<t_shader>;
-
-	std::map<GLuint, t_root>::iterator v_entry;
-
-	~t_shader() = default;
-
-public:
-	static t_pvalue f_construct(t_type* a_class, GLenum a_type)
-	{
-		auto session = t_session::f_instance();
-		GLuint id = glCreateShader(a_type);
-		t_error::f_check();
-		auto p = a_class->f_new<t_shader>();
-		p->f_as<t_shader>().v_entry = session->v_shaders.emplace(id, p).first;
-		return p;
-	}
-
-	GLuint f_id() const
-	{
-		return v_entry->first;
-	}
 	void f_delete()
 	{
-		glDeleteShader(f_id());
-		t_error::f_check();
-		t_session::f_instance()->v_shaders.erase(v_entry);
-		v_entry = {};
+		t_base_of::f_delete(glDeleteShader);
 	}
 	void f_compile()
 	{
